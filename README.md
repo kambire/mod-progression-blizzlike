@@ -495,8 +495,26 @@ Este proyecto está bajo licencia GPL 3.0. Ver archivo [LICENSE](LICENSE) para m
 - ✅ Documentación de 8 Arena Seasons
 - ✅ Sistema de control de vendors (FASE 0)
 - ✅ Validación de configuración
-- 🟡 Implementación de scripts SQL
+- 🟡 Implementación de scripts SQL (ver IMPLEMENTACION_VENDORS_SQL.md)
 - ⏳ Testing completo en producción
+
+### Estado de Implementación: SQL Scripts
+
+**Lo que significa "falta implementar los scripts en MySQL":**
+
+Los archivos SQL template están listos pero necesitan ser **personalizados e ejecutados** en tu base de datos MySQL:
+
+1. **Templates creados** (9 archivos en `/src/Bracket_*/sql/world/`):
+   - `vendors_cleanup_s1.sql` hasta `vendors_cleanup_s8.sql`
+   - `vendors_transition_tbc_to_wotlk.sql`
+
+2. **Qué hacer ahora**:
+   - Lee [IMPLEMENTACION_VENDORS_SQL.md](IMPLEMENTACION_VENDORS_SQL.md)
+   - Ejecuta las 6 queries SQL para obtener los IDs de vendors en tu BD
+   - Reemplaza `[PLACEHOLDER]` en cada template con valores reales
+   - Ejecuta los scripts en tu servidor MySQL
+
+3. **Estimado de tiempo**: ~57 minutos total
 
 ---
 
