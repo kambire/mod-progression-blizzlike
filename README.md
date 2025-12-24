@@ -278,8 +278,22 @@ src/Bracket_80_4_1/sql/templates/
 En blizzlike, la tabla `npc_vendor` usa `ExtendedCost` para definir el coste (Arena Points/Honor/Rating). La distinción
 entre **nuevo** y **legacy** se representa usando **ExtendedCost distintos**.
 
+Importante:
+- `ExtendedCost` **no es un número de oro**; es un **ID** que apunta a `item_extended_cost`.
+- Este módulo normalmente **no inventa precios**: reutiliza los costes existentes de tu core/DB (blizzlike) vía esos IDs.
+- Si un item aparece “por oro” en el vendor, casi siempre es porque `ExtendedCost = 0` (y el item tiene `BuyPrice` > 0).
+
 - `*_WITH_EXTENDEDCOST_NEW`: los costes del season actual
 - `*_WITH_EXTENDEDCOST_LEGACY`: los costes rebajados (o sin requisitos) para seasons anteriores
+
+Chequeo rápido (para detectar oro accidental):
+```sql
+-- Si esto devuelve filas para tus vendors de arena, están vendiendo por oro (ExtendedCost=0)
+SELECT `entry`, `item`, `ExtendedCost`
+FROM `npc_vendor`
+WHERE `entry` IN ([Sx_VENDOR_ENTRIES])
+  AND `ExtendedCost` = 0;
+```
 
 ### Configuración Obligatoria para FASE 0
 
