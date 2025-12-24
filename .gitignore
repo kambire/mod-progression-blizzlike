@@ -28,6 +28,9 @@ CMakeLists.txt.user
 # Build / release artifacts
 dist/
 
+# CodeQL analysis
+_codeql_detected_source_root
+
 #
 # IDE & other softwares
 #
