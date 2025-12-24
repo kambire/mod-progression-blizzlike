@@ -1,12 +1,12 @@
 -- =====================================================
--- ARENA SEASON 7 - DALARAN VENDORS CLEANUP
+-- ARENA SEASON 7 - VENDORS CLEANUP (BLIZZLIKE)
 -- Bracket: 80_3 (WotLK)
 -- Fecha: Aug 4, 2009
 -- =====================================================
 
-DELETE FROM npc_vendor 
-WHERE entry = [DALARAN_VENDOR_ID]
-  AND item_template NOT IN (
+DELETE FROM `npc_vendor`
+WHERE `entry` IN ([S7_VENDOR_ENTRIES])
+  AND `item` NOT IN (
     -- S5 Legacy
     [S5_ITEM_IDS],
     -- S6 Legacy
@@ -15,13 +15,12 @@ WHERE entry = [DALARAN_VENDOR_ID]
     [S7_ITEM_IDS]
   );
 
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, price_1)
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
 VALUES
-  -- S5-S6 Legacy (150k)
-  [S5_S6_ITEMS_WITH_PRICE_150000],
-  -- S7 New (300k - Vindictive Gladiator)
-  [S7_ITEMS_WITH_PRICE_300000]
+  -- S5-S6 Legacy
+  [S5_S6_ITEMS_WITH_EXTENDEDCOST_LEGACY],
+  -- S7 New
+  [S7_ITEMS_WITH_EXTENDEDCOST_NEW]
 ;
 
-SELECT COUNT(*) as total_items FROM npc_vendor WHERE entry = [DALARAN_VENDOR_ID];
--- Resultado esperado: 180 items (S5+S6+S7)
+SELECT COUNT(*) as total_items FROM `npc_vendor` WHERE `entry` IN ([S7_VENDOR_ENTRIES]);

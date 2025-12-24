@@ -1,42 +1,40 @@
 -- =====================================================
--- ARENA SEASON 1 - GADGETZAN VENDORS CLEANUP
+-- ARENA SEASON 1 - VENDORS CLEANUP (BLIZZLIKE)
 -- Bracket: 70_2_1 (TBC)
 -- Fecha: Jan 16, 2007
 -- =====================================================
 -- INSTRUCCIONES:
--- 1. Reemplaza [GADGETZAN_VENDOR_ID] con el ID real del vendor
+-- 1. Reemplaza [S1_VENDOR_ENTRIES] con los NPC entry reales del vendor (Horde/Alliance si aplica)
 -- 2. Reemplaza [S1_ITEM_IDS] con los IDs reales de items S1
--- 3. Ejecuta primero el DELETE, luego el INSERT
+-- 3. Reemplaza [S1_ITEMS_INSERT_STATEMENTS] con líneas INSERT que incluyan ExtendedCost (Arena Points / rating)
 -- =====================================================
 
 -- PASO 1: LIMPIAR - Borrar todos los items excepto S1
--- Este DELETE es seguro - no borra nada si ya está limpio
-DELETE FROM npc_vendor 
-WHERE entry = [GADGETZAN_VENDOR_ID]  -- REEMPLAZAR CON ID REAL (ej: 18945)
-  AND item_template NOT IN (
+-- Nota blizzlike: los costes se controlan por ExtendedCost (no por oro)
+DELETE FROM `npc_vendor`
+WHERE `entry` IN ([S1_VENDOR_ENTRIES])
+  AND `item` NOT IN (
     -- AGREGAR AQUÍ LOS IDS DE ITEMS S1 (Gladiator Season 1)
     -- Ejemplo: 23001, 23002, 23003, ... 23060
     [S1_ITEM_IDS]
   );
 
--- PASO 2: AGREGAR - Insertar items S1 con precios correctos
--- Precio S1: 150,000 gold (línea base)
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, price_1)
+-- PASO 2: AGREGAR - Insertar items S1 con ExtendedCost correcto
+-- Formato blizzlike AzerothCore:
+-- INSERT INTO `npc_vendor` (`entry`,`slot`,`item`,`maxcount`,`incrtime`,`ExtendedCost`,`VerifiedBuild`) VALUES
+-- (33609, 0, 12345, 0, 0, 1234, 0);
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
 VALUES
   -- AGREGAR AQUÍ TODOS LOS ITEMS S1
-  -- Formato: ([VENDOR_ID], [ITEM_ID], 0, 0, 0, 150000),
-  -- Ejemplo:
-  -- ([GADGETZAN_VENDOR_ID], 23001, 0, 0, 0, 150000),
-  -- ([GADGETZAN_VENDOR_ID], 23002, 0, 0, 0, 150000),
+  -- Formato: ([VENDOR_ENTRY], 0, [ITEM_ID], 0, 0, [EXTENDED_COST_ID], 0),
   [S1_ITEMS_INSERT_STATEMENTS]
 ;
 
 -- PASO 3: VALIDACIÓN - Verificar que se agregaron correctamente
 SELECT 
   COUNT(*) as total_items,
-  COUNT(DISTINCT item_template) as unique_items,
-  MIN(price_1) as min_price,
-  MAX(price_1) as max_price
-FROM npc_vendor 
-WHERE entry = [GADGETZAN_VENDOR_ID];
--- Resultado esperado: total_items=60, unique_items=60, min_price=150000, max_price=150000
+  COUNT(DISTINCT `item`) as unique_items,
+  COUNT(DISTINCT `ExtendedCost`) as unique_costs
+FROM `npc_vendor`
+WHERE `entry` IN ([S1_VENDOR_ENTRIES]);
+

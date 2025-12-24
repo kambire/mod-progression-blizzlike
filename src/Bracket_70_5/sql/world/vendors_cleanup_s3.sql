@@ -1,26 +1,25 @@
 -- =====================================================
--- ARENA SEASON 3 - GADGETZAN VENDORS CLEANUP
+-- ARENA SEASON 3 - VENDORS CLEANUP (BLIZZLIKE)
 -- Bracket: 70_5 (TBC)
 -- Fecha: Dec 11, 2007
 -- =====================================================
 
-DELETE FROM npc_vendor 
-WHERE entry = [GADGETZAN_VENDOR_ID]
-  AND item_template NOT IN (
+DELETE FROM `npc_vendor`
+WHERE `entry` IN ([S3_VENDOR_ENTRIES])
+  AND `item` NOT IN (
     [S1_ITEM_IDS],
     [S2_ITEM_IDS],
     [S3_ITEM_IDS]
   );
 
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, price_1)
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
 VALUES
-  -- S1 Legacy (100k)
-  [S1_ITEMS_WITH_PRICE_100000],
-  -- S2 Legacy (100k)
-  [S2_ITEMS_WITH_PRICE_100000],
-  -- S3 New (200k - Hateful Gladiator)
-  [S3_ITEMS_WITH_PRICE_200000]
+  -- S1 Legacy
+  [S1_ITEMS_WITH_EXTENDEDCOST_LEGACY],
+  -- S2 Legacy
+  [S2_ITEMS_WITH_EXTENDEDCOST_LEGACY],
+  -- S3 New
+  [S3_ITEMS_WITH_EXTENDEDCOST_NEW]
 ;
 
-SELECT COUNT(*) as total_items FROM npc_vendor WHERE entry = [GADGETZAN_VENDOR_ID];
--- Resultado esperado: 180 items (S1+S2+S3)
+SELECT COUNT(*) as total_items FROM `npc_vendor` WHERE `entry` IN ([S3_VENDOR_ENTRIES]);

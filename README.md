@@ -27,10 +27,10 @@ Sistema modular de progresión para AzerothCore que permite liberar contenido de
 
 ### 1. Control Total de Vendors por Bracket
 Sistema automático que asegura que jugadores solo vean items de su season actual:
-- **TBC (S1-S4)**: Vendors en Gadgetzan (Tanaris)
-- **WotLK (S5-S8)**: Vendors en Dalaran (Northrend)
-- Precios ajustados por antigüedad (items viejos = más baratos)
-- Desactivación automática de vendors al cambiar expansión
+- Los vendors se controlan por **NPC entry** (Horde/Alliance) y se limitan por season
+- El coste blizzlike se aplica con **`npc_vendor.ExtendedCost`** (Arena Points/Honor/Rating según tu core)
+- La ubicación exacta de vendors puede variar por DB (en WotLK suele ser Orgrimmar/Stormwind)
+- La activación/desactivación se realiza removiendo/agregando el flag de vendor (`npcflag` bit 128)
 
 ### 2. Bloqueadores de Contenido
 - Restricción automática de acceso a dungeons/raids del futuro
@@ -44,11 +44,7 @@ Sistema automático que asegura que jugadores solo vean items de su season actua
 ProgressionSystem.Bracket_70_2_1 = 1           # Arena S1 activo
 ProgressionSystem.Bracket_80_4_1 = 0           # Arena S8 desactivado
 
-# Parámetros de control
-ProgressionSystem.BlockFutureVendors = 1        # Bloquear vendors futuras
-ProgressionSystem.EnforceItemRestrictions = 1   # Restringir items
-ProgressionSystem.EnforceArenaVendorProgression = 1  # Control de arena
-ProgressionSystem.RestrictArenaRewards = 1      # Restringir recompensas
+# Nota: el módulo carga SQL por bracket. La lógica de vendors/arena se define en SQL.
 ```
 
 ---
@@ -171,20 +167,20 @@ cd ~/azerothcore-wotlk
 ## 🎮 Arena Seasons - Detalles Completos
 
 ### Season 1-4 (TBC) - Vendor: Gadgetzan
-| Season | Bracket | Período | Calificación | Gear | Precio |
-|--------|---------|---------|--------------|------|--------|
-| **S1** | 70_2_1 | Abr 2007-May 2007 | 1500+ | Gladiator | 150,000g |
-| **S2** | 70_2_2 | May 2007-Ago 2007 | 1500+ | Gladiator S2 | 200,000g |
-| **S3** | 70_5_1 | Ago 2007-Nov 2007 | 1500+ | Hateful | 200,000g |
-| **S4** | 70_6_2 | Nov 2007-Feb 2008 | 1500+ | Brutal | 200,000g |
+| Season | Bracket | Período | Calificación | Gear | Coste (blizzlike) |
+|--------|---------|---------|--------------|------|------------------|
+| **S1** | 70_2_1 | Abr 2007-May 2007 | 1500+ | Gladiator | `ExtendedCost` (Arena Points/Honor/Rating) |
+| **S2** | 70_2_2 | May 2007-Ago 2007 | 1500+ | Gladiator S2 | `ExtendedCost` (nuevo + legacy) |
+| **S3** | 70_5_1 | Ago 2007-Nov 2007 | 1500+ | Hateful | `ExtendedCost` (nuevo + legacy) |
+| **S4** | 70_6_2 | Nov 2007-Feb 2008 | 1500+ | Brutal | `ExtendedCost` (nuevo + legacy) |
 
-### Season 5-8 (WotLK) - Vendor: Dalaran
-| Season | Bracket | Período | Calificación | Gear | Precio |
-|--------|---------|---------|--------------|------|--------|
-| **S5** | 80_1_2 | Nov 2008-Mar 2009 | 2000+ | Wrathful (Early) | 250,000g |
-| **S6** | 80_2 | Mar 2009-Jun 2009 | 2000+ | Wrathful/Glorious | 250,000g |
-| **S7** | 80_3 | Jun 2009-Ago 2009 | 2000+ | Vindictive | 300,000g |
-| **S8** | 80_4_1 | Sep 2009-Jun 2010 | 2000+ | Relentless | 300,000g |
+### Season 5-8 (WotLK)
+| Season | Bracket | Período | Calificación | Gear | Coste (blizzlike) |
+|--------|---------|---------|--------------|------|------------------|
+| **S5** | 80_1_2 | Nov 2008-Mar 2009 | 2000+ | Deadly | `ExtendedCost` (nuevo) |
+| **S6** | 80_2 | Mar 2009-Jun 2009 | 2000+ | Furious | `ExtendedCost` (nuevo + legacy) |
+| **S7** | 80_3 | Jun 2009-Ago 2009 | 2000+ | Relentless | `ExtendedCost` (nuevo + legacy) |
+| **S8** | 80_4_1 | Sep 2009-Jun 2010 | 2000+ | Wrathful | `ExtendedCost` (nuevo + legacy) |
 
 ---
 
@@ -193,25 +189,12 @@ cd ~/azerothcore-wotlk
 ### Parámetros Principales
 
 ```ini
-# BLOQUEO DE CONTENIDO FUTURO
-ProgressionSystem.BlockFutureVendors = 1
-# Evita que jugadores accedan a vendors de temporadas futuras
+# Carga de scripts/SQL por bracket
+ProgressionSystem.LoadScripts = 1
+ProgressionSystem.LoadDatabase = 1
 
-ProgressionSystem.EnforceItemRestrictions = 1
-# Restringe items no autorizados en el bracket actual
-
-ProgressionSystem.EnforceArenaVendorProgression = 1
-# Progresión controlada de arena seasons
-
-ProgressionSystem.RestrictArenaRewards = 1
-# Restringe recompensas de arena según bracket
-
-# DESACTIVACIÓN Y LIMPIEZA
-ProgressionSystem.AutoCleanVendorsOnBracketChange = 1
-# Limpia vendors automáticamente al cambiar bracket
-
-ProgressionSystem.LegacyItemDiscount = 30
-# Descuento en porcentaje para items antiguos (30% = 70% del precio)
+# Opcional: re-aplicar SQL en cada arranque (más lento)
+ProgressionSystem.ReapplyUpdates = 0
 ```
 
 ### Habilitar Brackets por Nombre
@@ -291,25 +274,21 @@ src/Bracket_80_4_1/sql/world/
 
 ### Tabla de Precios por Season
 
-| Season | Bracket | Nuevos | Legacy S1 | Legacy S2-N1 | Legacy S2+ |
-|--------|---------|--------|-----------|-------------|-----------|
-| **S1** | 70_2_1 | 150k | - | - | - |
-| **S2** | 70_2_2 | 200k | 100k | - | - |
-| **S3** | 70_5_1 | 200k | 100k | 100k | - |
-| **S4** | 70_6_2 | 200k | 100k | 100k | 100k |
-| **S5** | 80_1_2 | 250k | - | - | - |
-| **S6** | 80_2 | 250k | - | - | 150k |
-| **S7** | 80_3 | 300k | - | - | 150k |
-| **S8** | 80_4_1 | 300k | - | - | 150k |
+En blizzlike, la tabla `npc_vendor` usa `ExtendedCost` para definir el coste (Arena Points/Honor/Rating). La distinción
+entre **nuevo** y **legacy** se representa usando **ExtendedCost distintos**.
+
+- `*_WITH_EXTENDEDCOST_NEW`: los costes del season actual
+- `*_WITH_EXTENDEDCOST_LEGACY`: los costes rebajados (o sin requisitos) para seasons anteriores
 
 ### Configuración Obligatoria para FASE 0
 
 ```ini
-# ESTOS 4 PARÁMETROS DEBEN ESTAR EN 1
-ProgressionSystem.BlockFutureVendors = 1
-ProgressionSystem.EnforceItemRestrictions = 1
-ProgressionSystem.EnforceArenaVendorProgression = 1
-ProgressionSystem.RestrictArenaRewards = 1
+# Requerido para aplicar SQL del módulo
+ProgressionSystem.LoadDatabase = 1
+
+# Activa los brackets que quieras usar
+ProgressionSystem.Bracket_70_2_1 = 1
+# ProgressionSystem.Bracket_80_4_1 = 1
 ```
 
 ---
@@ -319,14 +298,19 @@ ProgressionSystem.RestrictArenaRewards = 1
 ### Paso 1: Identificar Vendor IDs en tu BD
 
 ```sql
--- Encontrar vendor en Gadgetzan (TBC S1-S4)
-SELECT entry, name FROM creature WHERE map=1 AND name LIKE '%vendor%';
+-- Vendors (entries)
+SELECT entry, name
+FROM creature_template
+WHERE name LIKE '%Gladiator%'
+  OR name LIKE '%Arena%'
+  OR name LIKE '%PvP%'
+LIMIT 50;
 
--- Encontrar vendor en Area 52 (TBC backup)
-SELECT entry, name FROM creature WHERE map=530 AND name LIKE '%vendor%';
-
--- Encontrar vendor en Dalaran (WotLK S5-S8)
-SELECT entry, name FROM creature WHERE map=571 AND name LIKE '%vendor%';
+-- Costs (ExtendedCost)
+SELECT DISTINCT v.ExtendedCost
+FROM npc_vendor v
+WHERE v.entry IN (33609, 33610)
+ORDER BY v.ExtendedCost;
 ```
 
 ### Paso 2: Mapear Items por Season
@@ -393,7 +377,7 @@ cp vendors_cleanup_s1.sql ~/azerothcore-wotlk/data/sql/updates/...
 .server info  # Verifica que el módulo está cargado
 .reload scripts
 
-# 3. Ejecutar SQL scripts
+# 3. Ejecutar SQL scripts (si los ejecutas manualmente)
 mysql world < vendors_cleanup_s1.sql
 ```
 
@@ -502,17 +486,18 @@ Este proyecto está bajo licencia GPL 3.0. Ver archivo [LICENSE](LICENSE) para m
 
 **Lo que significa "falta implementar los scripts en MySQL":**
 
-Los archivos SQL template están listos pero necesitan ser **personalizados e ejecutados** en tu base de datos MySQL:
+Los archivos SQL template están listos pero necesitan ser **personalizados y ejecutados** en tu base de datos MySQL:
 
 1. **Templates creados** (9 archivos en `/src/Bracket_*/sql/world/`):
    - `vendors_cleanup_s1.sql` hasta `vendors_cleanup_s8.sql`
    - `vendors_transition_tbc_to_wotlk.sql`
 
 2. **Qué hacer ahora**:
-   - Lee [IMPLEMENTACION_VENDORS_SQL.md](IMPLEMENTACION_VENDORS_SQL.md)
-   - Ejecuta las 6 queries SQL para obtener los IDs de vendors en tu BD
-   - Reemplaza `[PLACEHOLDER]` en cada template con valores reales
-   - Ejecuta los scripts en tu servidor MySQL
+  - Lee [IMPLEMENTACION_VENDORS_SQL.md](IMPLEMENTACION_VENDORS_SQL.md)
+  - Obtén los **vendor entries** reales (Horde/Alliance) en `creature_template`
+  - Obtén los **ExtendedCost IDs** reales en `item_extended_cost` / vendors existentes
+  - Reemplaza los placeholders en cada template con valores reales
+  - Ejecuta los scripts en tu servidor MySQL
 
 3. **Estimado de tiempo**: ~57 minutos total
 

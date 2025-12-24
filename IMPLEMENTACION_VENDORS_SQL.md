@@ -1,6 +1,6 @@
 # 🚀 COMPLETAR E IMPLEMENTAR SQL SCRIPTS
 
-**Estatus**: Scripts templates listos, necesitan ser completados con IDs reales
+**Estatus**: Templates listos (blizzlike), necesitas completarlos con tus IDs reales
 
 ---
 
@@ -24,27 +24,40 @@ src/Bracket_80_4_1/sql/world/vendors_cleanup_s8.sql
 
 ## 🔍 PASO 1: Encontrar IDs en tu Base de Datos
 
-Ejecuta estas queries en MySQL para obtener los IDs necesarios:
+Ejecuta estas queries en MySQL para obtener los IDs necesarios.
 
-### Query 1: Vendor ID en Gadgetzan
+> Nota blizzlike (AzerothCore): los costes de PvP/Arena se controlan por `npc_vendor.ExtendedCost` (tabla `item_extended_cost`).
+> Los templates nuevos usan `npc_vendor.item` + `ExtendedCost` (NO oro).
+
+### Query 1: Encontrar vendors de Arena/PvP (entries)
 ```sql
-SELECT entry, name FROM creature WHERE map=1 AND name LIKE '%vendor%' LIMIT 5;
--- Copia el ENTRY de Gadgetzan
+-- Busca vendors por nombre (ajusta el LIKE a tu idioma/DB)
+SELECT entry, name
+FROM creature_template
+WHERE name LIKE '%Gladiator%'
+  OR name LIKE '%Arena%'
+  OR name LIKE '%PvP%'
+LIMIT 50;
 ```
 
-### Query 2: Vendor ID en Area 52
+### Query 2: Validar entries conocidos (WotLK típico)
 ```sql
-SELECT entry, name FROM creature WHERE map=530 AND name LIKE '%vendor%' LIMIT 5;
--- Copia el ENTRY de Area 52
+SELECT entry, name
+FROM creature_template
+WHERE entry IN (33609, 33610);
 ```
 
-### Query 3: Vendor ID en Dalaran
+### Query 3: Ver qué vende un vendor (para confirmar)
 ```sql
-SELECT entry, name FROM creature WHERE map=571 AND name LIKE '%vendor%' LIMIT 5;
--- Copia el ENTRY de Dalaran
+SELECT v.entry, v.item, it.name, v.ExtendedCost
+FROM npc_vendor v
+JOIN item_template it ON it.entry = v.item
+WHERE v.entry IN (33609, 33610)
+ORDER BY v.entry, v.item
+LIMIT 200;
 ```
 
-### Query 4: Items por Season
+### Query 4: Items por Season (ejemplos, ajusta nombres según tu DB)
 
 ```sql
 -- Season 1-2 (Gladiator)
@@ -57,13 +70,35 @@ SELECT entry, name FROM item_template WHERE name LIKE '%Hateful%' ORDER BY entry
 SELECT entry, name FROM item_template WHERE name LIKE '%Brutal%' ORDER BY entry;
 
 -- Season 5-6 (Wrathful)
-SELECT entry, name FROM item_template WHERE name LIKE '%Wrathful%' AND name NOT LIKE '%Vindictive%' AND name NOT LIKE '%Relentless%' ORDER BY entry;
+SELECT entry, name FROM item_template WHERE name LIKE '%Deadly%' ORDER BY entry;
 
 -- Season 7 (Vindictive)
-SELECT entry, name FROM item_template WHERE name LIKE '%Vindictive%' ORDER BY entry;
+SELECT entry, name FROM item_template WHERE name LIKE '%Furious%' ORDER BY entry;
 
 -- Season 8 (Relentless)
-SELECT entry, name FROM item_template WHERE name LIKE '%Relentless%' ORDER BY entry;
+SELECT entry, name FROM item_template WHERE name LIKE '%Wrathful%' ORDER BY entry;
+
+-- Si tu DB usa otros nombres (Relentless/Furious/Deadly/Wrathful), ajusta los LIKE.
+-- Lo importante es construir listas S1_ITEM_IDS ... S8_ITEM_IDS con los IDs correctos.
+
+### Query 5: Encontrar ExtendedCost IDs (costes) para PvP/Arena
+```sql
+-- Busca ExtendedCost usados por tus vendors actuales
+SELECT DISTINCT v.ExtendedCost
+FROM npc_vendor v
+WHERE v.entry IN (33609, 33610)
+ORDER BY v.ExtendedCost;
+
+-- Inspecciona detalles del extended cost
+SELECT *
+FROM item_extended_cost
+WHERE id IN (
+  SELECT DISTINCT v.ExtendedCost
+  FROM npc_vendor v
+  WHERE v.entry IN (33609, 33610)
+)
+ORDER BY id;
+```
 ```
 
 ---
@@ -75,9 +110,9 @@ SELECT entry, name FROM item_template WHERE name LIKE '%Relentless%' ORDER BY en
 ```sql
 -- Ejemplo: vendors_cleanup_s1.sql
 
-DELETE FROM npc_vendor 
-WHERE entry = 18945  -- REEMPLAZAR CON ID REAL
-  AND item_template NOT IN (
+DELETE FROM `npc_vendor`
+WHERE `entry` IN (33609, 33610)  -- REEMPLAZAR CON TUS ENTRIES
+  AND `item` NOT IN (
     23001,23002,23003,23004,23005,23006,23007,23008,23009,23010,  -- 10
     23011,23012,23013,23014,23015,23016,23017,23018,23019,23020,  -- 20
     23021,23022,23023,23024,23025,23026,23027,23028,23029,23030,  -- 30
@@ -86,13 +121,13 @@ WHERE entry = 18945  -- REEMPLAZAR CON ID REAL
     23051,23052,23053,23054,23055,23056,23057,23058,23059,23060   -- 60
   );
 
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, price_1)
+INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
 VALUES
-  (18945, 23001, 0, 0, 0, 150000),
-  (18945, 23002, 0, 0, 0, 150000),
-  (18945, 23003, 0, 0, 0, 150000),
+  (33609, 0, 23001, 0, 0, 1234, 0),
+  (33609, 0, 23002, 0, 0, 1234, 0),
+  (33610, 0, 23003, 0, 0, 1234, 0),
   -- ... 60 items total ...
-  (18945, 23060, 0, 0, 0, 150000)
+  (33610, 0, 23060, 0, 0, 1234, 0)
 ;
 ```
 
@@ -100,12 +135,12 @@ VALUES
 
 ## 📋 Checklist de Reemplazos
 
-### Para TBC (Gadgetzan)
+### Vendors (entries) por Season
 
-- [ ] **Reemplazar `[GADGETZAN_VENDOR_ID]`**
-  - En: vendors_cleanup_s1.sql, s2.sql, s3.sql, s4.sql
-  - Con: ID encontrado en Query 1
-  - Ejemplo: 18945
+-- [ ] **Reemplazar `[S1_VENDOR_ENTRIES]`, `[S2_VENDOR_ENTRIES]`, ...**
+  - En: todos los `vendors_cleanup_s*.sql`
+  - Con: entries reales (Horde/Alliance) de tu DB
+  - Ejemplo WotLK típico: `33609, 33610`
 
 - [ ] **Reemplazar `[S1_ITEM_IDS]`**
   - En: vendors_cleanup_s1.sql, s2.sql, s3.sql, s4.sql
@@ -127,12 +162,12 @@ VALUES
   - Con: IDs de Brutal items
   - Cantidad: ~60 items
 
-### Para WotLK (Dalaran)
+### ExtendedCost (blizzlike)
 
-- [ ] **Reemplazar `[DALARAN_VENDOR_ID]`**
-  - En: vendors_transition_tbc_to_wotlk.sql, s5.sql, s6.sql, s7.sql, s8.sql
-  - Con: ID encontrado en Query 3
-  - Ejemplo: 31234
+- [ ] **Reemplazar placeholders `*_WITH_EXTENDEDCOST_*`**
+  - En: todos los `vendors_cleanup_s*.sql`
+  - Con: líneas INSERT reales que incluyan el `ExtendedCost` correcto
+  - Fuente: Query 5 (item_extended_cost) o valores ya usados por tu core
 
 - [ ] **Reemplazar `[S5_ITEM_IDS]`**
   - En: vendors_cleanup_s5.sql, s6.sql, s7.sql, s8.sql
@@ -156,11 +191,11 @@ VALUES
 
 ---
 
-## 🔗 Para Otros Vendors (Si aplica)
+## 🔗 Transición TBC → WotLK
 
-- [ ] **Reemplazar `[AREA52_VENDOR_ID]`**
-  - En: vendors_transition_tbc_to_wotlk.sql
-  - Con: ID encontrado en Query 2
+- [ ] **Reemplazar `[TBC_VENDOR_ENTRIES]` y `[WOTLK_VENDOR_ENTRIES]`**
+  - En: `vendors_transition_tbc_to_wotlk.sql`
+  - Con: entries reales que quieras desactivar/activar
 
 ---
 
@@ -191,10 +226,10 @@ cp src/Bracket_*/sql/world/vendors_*.sql ~/path/to/updates/
 ## ✅ PASO 4: Validar en Juego
 
 ```
-[ ] Entra a Bracket_70_2_1 y verifica:
-    - Vendor visible en Gadgetzan
-    - Solo items de S1 (Gladiator S1)
-    - Precio 150,000 gold
+[ ] Entra al bracket correspondiente y verifica:
+  - Vendors correctos (Horde/Alliance)
+  - Solo items de la season permitida
+  - Costes correctos (Arena Points/Honor/Rating según tu core)
 
 [ ] Entra a Bracket_70_2_2 y verifica:
     - Vendor visible en Gadgetzan
@@ -220,7 +255,7 @@ cp src/Bracket_*/sql/world/vendors_*.sql ~/path/to/updates/
 | 1 | Ejecutar 6 queries en BD | 5 min |
 | 2 | Completar 9 templates SQL | 30 min |
 | 3 | Copiar scripts al servidor | 5 min |
-| 4 | Reiniciar servidor | 2 min |
+| 4 | Reiniciar worldserver (si aplica) | 2 min |
 | 5 | Validar en juego | 15 min |
 | **Total** | | **57 minutos** |
 
