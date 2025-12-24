@@ -77,7 +77,7 @@ SELECT 'Arena Season 7 Vendors' as `Check`,
        COUNT(*) as VendorCount
 FROM npc_vendor
 WHERE entry IN (33609, 33610)
-AND item_template > 40000 AND item_template < 50000;
+AND item > 40000 AND item < 50000;
 
 -- This should show seasonal PvP items available
 
@@ -118,7 +118,7 @@ SELECT 'Season 6 PvP Items' as `Check`,
        COUNT(*) as ItemCount
 FROM npc_vendor
 WHERE entry IN (33609, 33610)
-AND item_template BETWEEN 40000 AND 44999;
+AND item BETWEEN 40000 AND 44999;
 
 -- Expected result: > 50 items (full seasonal vendor set)
 
@@ -128,7 +128,19 @@ SELECT 'Season 7 PvP Items' as `Check`,
        COUNT(*) as ItemCount
 FROM npc_vendor
 WHERE entry IN (33609, 33610)
-AND item_template BETWEEN 47000 AND 50999;
+AND item BETWEEN 47000 AND 50999;
+
+-- ========================================
+-- 8b. VERIFY ARENA VENDORS ARE NOT SELLING FOR GOLD
+-- ========================================
+
+-- If this returns rows, those items are being sold for gold (ExtendedCost=0)
+-- because npc_vendor.ExtendedCost is missing and the client falls back to item_template.BuyPrice.
+SELECT 'Arena Vendors - GOLD PRICED (ExtendedCost=0)' as `Check`,
+             COUNT(*) as GoldPricedItems
+FROM npc_vendor
+WHERE entry IN (33609, 33610)
+    AND ExtendedCost = 0;
 
 -- Expected result: > 50 items (full seasonal vendor set)
 

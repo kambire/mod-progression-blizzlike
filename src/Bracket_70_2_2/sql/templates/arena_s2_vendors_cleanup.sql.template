@@ -30,10 +30,15 @@ VALUES
   [S2_ITEMS_WITH_EXTENDEDCOST_NEW]
 ;
 
--- VALIDACIÓN
 SELECT 
   COUNT(*) as total_items,
   COUNT(DISTINCT `item`) as unique_items,
   COUNT(DISTINCT `ExtendedCost`) as unique_costs
 FROM `npc_vendor`
 WHERE `entry` IN ([S2_VENDOR_ENTRIES]);
+
+-- SAFETY: if this returns rows, those items will be sold for GOLD (ExtendedCost=0)
+SELECT `entry`, `item`, `ExtendedCost`
+FROM `npc_vendor`
+WHERE `entry` IN ([S2_VENDOR_ENTRIES])
+  AND `ExtendedCost` = 0;
