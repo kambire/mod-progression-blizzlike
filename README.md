@@ -1,11 +1,14 @@
 # 🎮 Progression System Module - AzerothCore
 
+**✨ Dynamic WoW Content Progression - No Recompilation Required ✨**
+
 **Control total de progresión del servidor WoW - 38 brackets, 3 expansiones, 8 arena seasons**
 
 [![License](https://img.shields.io/badge/license-GPL%203.0-blue.svg)](LICENSE)
 [![AzerothCore](https://img.shields.io/badge/AzerothCore-3.3.5a-brightgreen.svg)](https://www.azerothcore.org/)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-green.svg)]()
 [![SQL](https://img.shields.io/badge/Database-MySQL-orange.svg)]()
+[![Status](https://img.shields.io/badge/status-production%20ready-success.svg)]()
 
 ---
 
@@ -13,47 +16,86 @@
 
 Sistema modular de progresión para AzerothCore que permite liberar contenido de forma gradual, replicando exactamente el timeline de expansiones de World of Warcraft de **Noviembre 2004 a Junio 2010**.
 
+**🎯 Característica Principal: Carga Dinámica Sin Recompilación**
+
+Este módulo implementa un sistema de **carga dinámica basada en configuración** que permite cambiar la progresión del servidor editando únicamente archivos de configuración. **No se requiere recompilar** cuando cambias de timeline.
+
 **Características**:
-- ✅ **Carga dinámica sin recompilación** - Cambia timeline solo con configuración
+- ⚡ **Carga dinámica sin recompilación** - Cambia timeline solo editando config y reiniciando
 - ✅ 38 brackets independientes (Vanilla, TBC, WotLK)
 - ✅ 8 Arena Seasons integradas (S1-S8)
 - ✅ Control granular de vendors por season
 - ✅ Bloqueo automático de contenido futuro
-- ✅ Carga de SQL y scripts dinámicos por bracket
+- ✅ Scripts C++ y SQL cargan solo para brackets activos
 - ✅ Sistema de configuración centralizado
+- ✅ Comandos de administración integrados
+- ✅ Logging comprehensivo
 
 ---
 
 ## 🚀 Quick Start
 
-1. **Clone the module**:
+### 1. Instalación (Una sola vez)
+
 ```bash
+# Clone the module
 cd ~/azerothcore-wotlk/modules
 git clone https://github.com/kambire/mod-progression-blizzlike.git
-```
 
-2. **Compile** (one-time only):
-```bash
+# Compile (one-time only)
 cd ~/azerothcore-wotlk/build
 make -j$(nproc)
 ```
 
-3. **Configure brackets**:
+### 2. Configurar Brackets (Cada vez que cambias timeline)
+
 ```bash
+# Copy and edit configuration
 cd ~/azerothcore-wotlk/etc/modules
 cp mod-progression-blizzlike/conf/progression_system.conf.dist progression_system.conf
 nano progression_system.conf
-# Enable desired brackets
+
+# Example: Enable Vanilla only
+ProgressionSystem.Bracket_0 = 1
+ProgressionSystem.Bracket_1_19 = 1
+# ... (enable brackets 0-13 for Vanilla)
+# ... (set brackets 14-37 to 0 for TBC/WotLK disabled)
 ```
 
-4. **Restart server** - Changes take effect immediately, no recompilation needed!
+### 3. Aplicar Cambios
 
-5. **Verify**:
-```
-.progression status   # In-game command to see active brackets
+```bash
+# Simply restart the server - NO RECOMPILATION NEEDED!
+cd ~/azerothcore-wotlk
+./worldserver
+
+# The logs will show which brackets loaded:
+# ">> Loading Progression System Module..."
+# "  -> Loading Bracket_0 scripts"
+# "  -> Loading Bracket_1_19 scripts"
+# ">> mod-progression-blizzlike database updates loaded successfully"
 ```
 
-📖 **[Read the Dynamic Loading Guide](DYNAMIC_LOADING.md)** for detailed architecture explanation
+### 4. Verificar
+
+```
+# In-game commands (GM required):
+.progression info     # Module version and settings
+.progression status   # Show active brackets only
+.progression list     # Show all 38 brackets with status
+```
+
+**🎉 Done! Change brackets anytime by editing config + restarting!**
+
+---
+
+## 📚 Documentation
+
+- 📖 **[DYNAMIC_LOADING.md](DYNAMIC_LOADING.md)** - Complete technical architecture and how dynamic loading works
+- 📊 **[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)** - Implementation status, testing, and verification
+- 📋 **[BRACKET_DESCRIPTIONS_COMPLETE.md](BRACKET_DESCRIPTIONS_COMPLETE.md)** - Detailed description of all 38 brackets
+- 🏟️ **[ARENA_SEASONS_VALIDATION.md](ARENA_SEASONS_VALIDATION.md)** - Arena seasons mapping and validation
+- 🏭 **[PRODUCTION.md](PRODUCTION.md)** - Production deployment guide
 
 ---
 
