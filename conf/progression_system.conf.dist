@@ -162,7 +162,7 @@ ProgressionSystem.Bracket_70_1_1  = 0
 # Recommended Duration: 2-3 weeks
 
 ProgressionSystem.Bracket_70_1_2  = 0
-# Level 70 | TBC: Raid Prep | Heroic Dungeons + Arena Season 5 Start
+# Level 70 | TBC: Raid Prep | Heroic Dungeons
 # Content: All level 70 dungeons in Heroic difficulty (increased mechanics)
 # Features: Badges of Valor for epic gear, attunement requirements, first DPS checks
 # Release: January 16, 2007
@@ -177,7 +177,7 @@ ProgressionSystem.Bracket_70_2_1  = 0
 # Recommended Duration: 4-6 weeks
 
 ProgressionSystem.Bracket_70_2_2  = 0
-# Level 70 | TBC: Raid Tier 1 (10-man) | Karazhan + Arena Season 1
+# Level 70 | TBC: Raid Tier 1 (10-man) | Karazhan + Arena Season 2
 # Raid: Karazhan (10-man, 11 encounters)
 # Bosses: Attumen, Moroes, Maiden of Virtue, Opera, Shade of Aran, Illhoof, Chess Event, Prince Malchezaar
 # Features: 10-man format accessibility, Medivh lore, attunement requirement, tower progression
@@ -643,8 +643,8 @@ ProgressionSystem.Arena.Season1.BracketRestriction = 0
 
 #
 #    ProgressionSystem.Arena.Season2.BracketRestriction
-#        Description: CRITICAL - Restricts Season 2 Arena vendors to Bracket_70_4_1 only
-#                     Season 2 items (Vengeful gear) available only during Mount Hyjal tier
+#        Description: CRITICAL - Restricts Season 2 Arena vendors to Season 2 brackets only
+#                     Season 2 items (Merciless gear) available only during Season 2 phase
 #        Default:   0 - Disabled
 #                   1 - Enabled (RECOMMENDED)
 #
@@ -653,8 +653,8 @@ ProgressionSystem.Arena.Season2.BracketRestriction = 0
 
 #
 #    ProgressionSystem.Arena.Season3.BracketRestriction
-#        Description: CRITICAL - Restricts Season 3 Arena vendors to Bracket_70_4_2 only
-#                     Season 3 items (Brutal gear) available only during Black Temple tier
+#        Description: CRITICAL - Restricts Season 3 Arena vendors to Season 3 brackets only
+#                     Season 3 items (Vengeful gear) available only during Season 3 phase
 #        Default:   0 - Disabled
 #                   1 - Enabled (RECOMMENDED)
 #
@@ -664,7 +664,7 @@ ProgressionSystem.Arena.Season3.BracketRestriction = 0
 #
 #    ProgressionSystem.Arena.Season4.BracketRestriction
 #        Description: CRITICAL - Restricts Season 4 Arena vendors to Bracket_70_6_2 only
-#                     Season 4 items (Hateful gear) available only during Sunwell Plateau tier
+#                     Season 4 items (Brutal gear) available only during Sunwell Plateau tier
 #        Default:   0 - Disabled
 #                   1 - Enabled (RECOMMENDED)
 #
@@ -771,12 +771,12 @@ ProgressionSystem.DisabledAttunements = ""
 ProgressionSystem.Bracket.ArenaSeason1 = Bracket_70_2_1,Bracket_70_2_2
 ProgressionSystem.Bracket.ArenaSeason1.Enabled = 0
 
-# Season 2: Mount Hyjal era (TBC)
-ProgressionSystem.Bracket.ArenaSeason2 = Bracket_70_4_1
+# Season 2: Merciless era (TBC)
+ProgressionSystem.Bracket.ArenaSeason2 = Bracket_70_2_2,Bracket_70_3_2,Bracket_70_4_1
 ProgressionSystem.Bracket.ArenaSeason2.Enabled = 0
 
-# Season 3: Black Temple era (TBC)
-ProgressionSystem.Bracket.ArenaSeason3 = Bracket_70_4_2
+# Season 3: Vengeful era (TBC)
+ProgressionSystem.Bracket.ArenaSeason3 = Bracket_70_5
 ProgressionSystem.Bracket.ArenaSeason3.Enabled = 0
 
 # Season 4: Sunwell Plateau era (TBC end)

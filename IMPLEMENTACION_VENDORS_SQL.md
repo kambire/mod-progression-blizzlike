@@ -9,16 +9,19 @@
 Todos los scripts templates están en sus carpetas correctas:
 
 ```
-src/Bracket_70_2_1/sql/world/vendors_cleanup_s1.sql
-src/Bracket_70_2_2/sql/world/vendors_cleanup_s2.sql
-src/Bracket_70_5/sql/world/vendors_cleanup_s3.sql
-src/Bracket_70_6_2/sql/world/vendors_cleanup_s4.sql
-src/Bracket_80_1_2/sql/world/vendors_cleanup_s5.sql
-src/Bracket_80_1_2/sql/world/vendors_transition_tbc_to_wotlk.sql
-src/Bracket_80_2/sql/world/vendors_cleanup_s6.sql
-src/Bracket_80_3/sql/world/vendors_cleanup_s7.sql
-src/Bracket_80_4_1/sql/world/vendors_cleanup_s8.sql
+src/Bracket_70_2_1/sql/templates/arena_s1_vendors_cleanup.sql.template
+src/Bracket_70_2_2/sql/templates/arena_s2_vendors_cleanup.sql.template
+src/Bracket_70_5/sql/templates/arena_s3_vendors_cleanup.sql.template
+src/Bracket_70_6_2/sql/templates/arena_s4_vendors_cleanup.sql.template
+src/Bracket_80_1_2/sql/templates/transition_tbc_to_wotlk_vendors.sql.template
+src/Bracket_80_1_2/sql/templates/arena_s5_vendors_cleanup.sql.template
+src/Bracket_80_2/sql/templates/arena_s6_vendors_cleanup.sql.template
+src/Bracket_80_3/sql/templates/arena_s7_vendors_cleanup.sql.template
+src/Bracket_80_4_1/sql/templates/arena_s8_vendors_cleanup.sql.template
 ```
+
+> Nota producción: los archivos `src/**/sql/world/vendors_*.sql` son stubs (comentarios) para que el DBUpdater no ejecute placeholders.
+> Para aplicar cambios, completa el `.sql.template`, guarda una copia como `.sql` y ejecútala manualmente (o como update de AzerothCore).
 
 ---
 
@@ -114,7 +117,7 @@ ORDER BY id;
 ### Formato del Script Completado
 
 ```sql
--- Ejemplo: vendors_cleanup_s1.sql
+-- Ejemplo: arena_s1_vendors_cleanup.sql (generado desde el .template)
 
 DELETE FROM `npc_vendor`
 WHERE `entry` IN (33609, 33610)  -- REEMPLAZAR CON TUS ENTRIES
@@ -143,56 +146,56 @@ VALUES
 
 ### Vendors (entries) por Season
 
--- [ ] **Reemplazar `[S1_VENDOR_ENTRIES]`, `[S2_VENDOR_ENTRIES]`, ...**
-  - En: todos los `vendors_cleanup_s*.sql`
+- [ ] **Reemplazar `[S1_VENDOR_ENTRIES]`, `[S2_VENDOR_ENTRIES]`, ...**
+  - En: todos los templates `arena_s*_vendors_cleanup.sql.template`
   - Con: entries reales (Horde/Alliance) de tu DB
   - Ejemplo WotLK típico: `33609, 33610`
 
 - [ ] **Reemplazar `[S1_ITEM_IDS]`**
-  - En: vendors_cleanup_s1.sql, s2.sql, s3.sql, s4.sql
+  - En: arena_s1_vendors_cleanup, arena_s2_vendors_cleanup, arena_s3_vendors_cleanup, arena_s4_vendors_cleanup
   - Con: IDs de Gladiator items (Season 1-2)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S2_ITEM_IDS]`**
-  - En: vendors_cleanup_s2.sql, s3.sql, s4.sql
+  - En: arena_s2_vendors_cleanup, arena_s3_vendors_cleanup, arena_s4_vendors_cleanup
   - Con: IDs de Gladiator items (Season 2)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S3_ITEM_IDS]`**
-  - En: vendors_cleanup_s3.sql, s4.sql
-  - Con: IDs de Hateful items
+  - En: arena_s3_vendors_cleanup, arena_s4_vendors_cleanup
+  - Con: IDs de Vengeful items (Season 3)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S4_ITEM_IDS]`**
-  - En: vendors_cleanup_s4.sql
-  - Con: IDs de Brutal items
+  - En: arena_s4_vendors_cleanup
+  - Con: IDs de Brutal items (Season 4)
   - Cantidad: ~60 items
 
 ### ExtendedCost (blizzlike)
 
 - [ ] **Reemplazar placeholders `*_WITH_EXTENDEDCOST_*`**
-  - En: todos los `vendors_cleanup_s*.sql`
+  - En: todos los templates `arena_s*_vendors_cleanup.sql.template`
   - Con: líneas INSERT reales que incluyan el `ExtendedCost` correcto
   - Fuente: Query 5 (item_extended_cost) o valores ya usados por tu core
 
 - [ ] **Reemplazar `[S5_ITEM_IDS]`**
-  - En: vendors_cleanup_s5.sql, s6.sql, s7.sql, s8.sql
-  - Con: IDs de Wrathful items (Season 5)
+  - En: arena_s5_vendors_cleanup, arena_s6_vendors_cleanup, arena_s7_vendors_cleanup, arena_s8_vendors_cleanup
+  - Con: IDs de Deadly items (Season 5)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S6_ITEM_IDS]`**
-  - En: vendors_cleanup_s6.sql, s7.sql, s8.sql
-  - Con: IDs de Wrathful items (Season 6)
+  - En: arena_s6_vendors_cleanup, arena_s7_vendors_cleanup, arena_s8_vendors_cleanup
+  - Con: IDs de Furious items (Season 6)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S7_ITEM_IDS]`**
-  - En: vendors_cleanup_s7.sql, s8.sql
-  - Con: IDs de Vindictive items
+  - En: arena_s7_vendors_cleanup, arena_s8_vendors_cleanup
+  - Con: IDs de Relentless items (Season 7)
   - Cantidad: ~60 items
 
 - [ ] **Reemplazar `[S8_ITEM_IDS]`**
-  - En: vendors_cleanup_s8.sql
-  - Con: IDs de Relentless items
+  - En: arena_s8_vendors_cleanup
+  - Con: IDs de Wrathful items (Season 8)
   - Cantidad: ~60 items
 
 ---
@@ -200,7 +203,7 @@ VALUES
 ## 🔗 Transición TBC → WotLK
 
 - [ ] **Reemplazar `[TBC_VENDOR_ENTRIES]` y `[WOTLK_VENDOR_ENTRIES]`**
-  - En: `vendors_transition_tbc_to_wotlk.sql`
+  - En: `transition_tbc_to_wotlk_vendors.sql.template`
   - Con: entries reales que quieras desactivar/activar
 
 ---
@@ -209,22 +212,22 @@ VALUES
 
 ### Opción 1: Copiar a servidor (automático)
 ```bash
-# Los scripts se cargarán automáticamente si están en las carpetas correctas
-# Al reiniciar el servidor o ejecutar update
+# Producción: los vendors_* en sql/world son stubs, NO se auto-ejecutan.
+# Esto es intencional para evitar que placeholders rompan el autoload del DBUpdater.
 ```
 
 ### Opción 2: Ejecutar manualmente
 ```sql
 -- Conectarse a MySQL y ejecutar:
-mysql world < src/Bracket_70_2_1/sql/world/vendors_cleanup_s1.sql
-mysql world < src/Bracket_70_2_2/sql/world/vendors_cleanup_s2.sql
+mysql world < src/Bracket_70_2_1/sql/templates/arena_s1_vendors_cleanup.sql
+mysql world < src/Bracket_70_2_2/sql/templates/arena_s2_vendors_cleanup.sql
 -- ... etc ...
 ```
 
 ### Opción 3: Copiar scripts a updates
 ```bash
-cp src/Bracket_*/sql/world/vendors_*.sql ~/path/to/updates/
-# El updater de AzerothCore los ejecutará automáticamente
+cp src/Bracket_*/sql/templates/*.sql.template ~/path/to/updates/
+# Renombra a .sql, completa placeholders y el updater de AzerothCore los ejecutará automáticamente
 ```
 
 ---
@@ -249,7 +252,7 @@ cp src/Bracket_*/sql/world/vendors_*.sql ~/path/to/updates/
 
 [ ] Entra a Bracket_80_4_1 y verifica:
     - Todos los items disponibles
-    - Precios correctos
+  - Costes correctos (ExtendedCost)
 ```
 
 ---

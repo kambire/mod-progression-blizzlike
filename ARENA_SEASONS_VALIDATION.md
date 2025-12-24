@@ -14,7 +14,7 @@
 -- Vendors: depende de tu core/DB (entries pueden variar)
 
 -- SEASON 2 (Merciless) - TBC
--- Bracket: Bracket_70_4_1
+-- Bracket: Bracket_70_2_2
 -- Dates: (aprox) 2007
 -- Rating: depende del item (se expresa en item_extended_cost)
 -- Rewards: Merciless
@@ -27,7 +27,7 @@
 -- Rewards: Vengeful
 
 -- SEASON 4 (Brutal) - TBC
--- Bracket: Bracket_70_6_2 / Bracket_80_1_1
+-- Bracket: Bracket_70_6_2
 -- Dates: (aprox) 2008
 -- Rating: depende del item (se expresa en item_extended_cost)
 -- Rewards: Brutal
@@ -69,7 +69,7 @@ JOIN item_template it ON it.entry = v.item
 WHERE v.entry IN (33609, 33610, 33611, 33612)
     AND it.name LIKE '%Gladiator%'
 UNION ALL
-SELECT 'Bracket_70_4_1 (Season 2)', COUNT(*)
+SELECT 'Bracket_70_2_2 (Season 2)', COUNT(*)
 FROM npc_vendor v
 JOIN item_template it ON it.entry = v.item
 WHERE v.entry IN (33609, 33610)

@@ -11,7 +11,7 @@ inline std::vector<std::string> GetDatabaseDirectories(std::string const& folder
 {
     std::vector<std::string> directories;
 
-    std::string const path = "/modules/mod-progression-system/src/Bracket_";
+    std::string const path = "/modules/mod-progression-blizzlike/src/Bracket_";
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
         if (!(sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false)))
@@ -33,7 +33,7 @@ public:
 
     void OnAfterDatabasesLoaded(uint32 updateFlags) override
     {
-        LOG_INFO("server.server", "Loading mod-progression-system updates...");
+        LOG_INFO("server.server", "Loading mod-progression-blizzlike updates...");
 
         if (DBUpdater<LoginDatabaseConnection>::IsEnabled(updateFlags))
         {

@@ -1,25 +1,4 @@
--- =====================================================
--- ARENA SEASON 4 - VENDORS CLEANUP (BLIZZLIKE)
--- Bracket: 70_6_2 (TBC Final)
--- Fecha: May 22, 2008
--- NOTA: Este es el último bracket de TBC
--- =====================================================
-
-DELETE FROM `npc_vendor`
-WHERE `entry` IN ([S4_VENDOR_ENTRIES])
-  AND `item` NOT IN (
-    [S1_ITEM_IDS],
-    [S2_ITEM_IDS],
-    [S3_ITEM_IDS],
-    [S4_ITEM_IDS]
-  );
-
-INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
-VALUES
-  -- Legacy items S1-S3
-  [S1_S2_S3_ITEMS_WITH_EXTENDEDCOST_LEGACY],
-  -- S4 New
-  [S4_ITEMS_WITH_EXTENDEDCOST_NEW]
-;
-
-SELECT COUNT(*) as total_items FROM `npc_vendor` WHERE `entry` IN ([S4_VENDOR_ENTRIES]);
+-- STUB / PRODUCCIÓN:
+-- Este archivo se deja intencionalmente sin SQL ejecutable.
+-- Motivo: era un TEMPLATE con placeholders ([...]) y rompía el autoload.
+-- Template real: ../templates/arena_s4_vendors_cleanup.sql.template

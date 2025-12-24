@@ -52,7 +52,7 @@ ProgressionSystem.Bracket_80_4_1 = 0           # Arena S8 desactivado
 ## 📦 Estructura del Proyecto
 
 ```
-mod-progression-system/
+mod-progression-blizzlike/
 ├── conf/
 │   ├── progression_system.conf.dist       # Config principal
 │   └── conf.sh.dist                       # Template bash
@@ -79,12 +79,12 @@ mod-progression-system/
 ### 1. Clonar el módulo
 ```bash
 cd ~/azerothcore-wotlk/modules
-git clone https://github.com/tu-usuario/mod-progression-system.git
+git clone https://github.com/tu-usuario/mod-progression-blizzlike.git
 ```
 
 ### 2. Configurar brackets
 ```bash
-cd mod-progression-system/conf
+cd mod-progression-blizzlike/conf
 cp progression_system.conf.dist progression_system.conf
 # Editar progression_system.conf y activar brackets deseados
 ```
@@ -155,11 +155,11 @@ cd ~/azerothcore-wotlk
 | **Bracket_71_74** | 71-74 | - | Northrend Intro | Nov 13, 2008 |
 | **Bracket_75_79** | 75-79 | - | Mid-Level | Nov 13, 2008 |
 | **Bracket_80_1_1** | 80 | - | Dungeons | Nov 13, 2008 |
-| **Bracket_80_1_2** | 80 | **S5** | Naxxramas 80 | Nov 13, 2008 |
-| **Bracket_80_2** | 80 | **S6** | Ulduar | Mar 17, 2009 |
+| **Bracket_80_1_2** | 80 | **S5** | Heroic Dungeons | Nov 13, 2008 |
+| **Bracket_80_2** | 80 | **S6** | T7 (Naxx/OS/EoE) + Ulduar | Mar 17, 2009 |
 | **Bracket_80_3** | 80 | **S7** | Trial/Coliseum | Aug 4, 2009 |
 | **Bracket_80_4_1** | 80 | **S8** | Icecrown Citadel | Dec 8, 2009 |
-| **Bracket_80_4_2** | 80 | - | ICC Post-Heroic | Dec 8, 2009 |
+| **Bracket_80_4_2** | 80 | - | Ruby Sanctum | Jun 29, 2010 |
 | **Bracket_Custom** | - | - | Contenido personalizado | - |
 
 ---
@@ -233,11 +233,12 @@ ProgressionSystem.Bracket_80_4_1 = 1  # Arena S8
 -- 1. LIMPIAR - Borrar items no válidos
 DELETE FROM npc_vendor 
 WHERE entry = [VENDOR_ID] 
-  AND item_template NOT IN ([VALID_ITEMS_FOR_THIS_SEASON]);
+  AND item NOT IN ([VALID_ITEMS_FOR_THIS_SEASON]);
 
--- 2. AGREGAR - Insertar items correctos con precios
-INSERT INTO npc_vendor (entry, item_template, price_1)
-VALUES ([VENDOR_ID], [ITEM_ID], [PRICE]);
+-- 2. AGREGAR - Insertar items correctos con coste blizzlike (ExtendedCost)
+-- Nota: el coste NO es oro; se define por `ExtendedCost` (Arena Points/Honor/Rating)
+INSERT INTO npc_vendor (entry, slot, item, maxcount, incrtime, ExtendedCost, VerifiedBuild)
+VALUES ([VENDOR_ID], 0, [ITEM_ID], 0, 0, [EXTENDED_COST_ID], 0);
 
 -- 3. VALIDAR - Verificar que funcionó
 SELECT COUNT(*) FROM npc_vendor WHERE entry = [VENDOR_ID];
@@ -246,30 +247,30 @@ SELECT COUNT(*) FROM npc_vendor WHERE entry = [VENDOR_ID];
 ### Estructura de Scripts SQL
 
 ```
-src/Bracket_70_2_1/sql/world/
-└─ vendors_cleanup_s1.sql          # Arena S1 - Solo S1 items (60)
+src/Bracket_70_2_1/sql/templates/
+└─ arena_s1_vendors_cleanup.sql.template          # Arena S1 - Template (completar placeholders)
 
-src/Bracket_70_2_2/sql/world/
-└─ vendors_cleanup_s2.sql          # Arena S2 - S1+S2 items (120)
+src/Bracket_70_2_2/sql/templates/
+└─ arena_s2_vendors_cleanup.sql.template          # Arena S2 - Template (S1 legacy + S2 new)
 
-src/Bracket_70_5/sql/world/
-└─ vendors_cleanup_s3.sql          # Arena S3 - S1+S2+S3 items (180)
+src/Bracket_70_5/sql/templates/
+└─ arena_s3_vendors_cleanup.sql.template          # Arena S3 - Template (S1-S3)
 
-src/Bracket_70_6_2/sql/world/
-└─ vendors_cleanup_s4.sql          # Arena S4 - S1-S4 items (240)
+src/Bracket_70_6_2/sql/templates/
+└─ arena_s4_vendors_cleanup.sql.template          # Arena S4 - Template (S1-S4)
 
-src/Bracket_80_1_2/sql/world/
-├─ vendors_transition.sql           # Transición TBC→WotLK
-└─ vendors_cleanup_s5.sql          # Arena S5 - Limpio, solo S5 (60)
+src/Bracket_80_1_2/sql/templates/
+├─ transition_tbc_to_wotlk_vendors.sql.template   # Template transición TBC→WotLK (npcflag 128)
+└─ arena_s5_vendors_cleanup.sql.template          # Arena S5 - Template (solo S5)
 
-src/Bracket_80_2/sql/world/
-└─ vendors_cleanup_s6.sql          # Arena S6 - S5+S6 items (120)
+src/Bracket_80_2/sql/templates/
+└─ arena_s6_vendors_cleanup.sql.template          # Arena S6 - Template (S5 legacy + S6 new)
 
-src/Bracket_80_3/sql/world/
-└─ vendors_cleanup_s7.sql          # Arena S7 - S5-S7 items (180)
+src/Bracket_80_3/sql/templates/
+└─ arena_s7_vendors_cleanup.sql.template          # Arena S7 - Template (S5-S7)
 
-src/Bracket_80_4_1/sql/world/
-└─ vendors_cleanup_s8.sql          # Arena S8 - S5-S8 items (240)
+src/Bracket_80_4_1/sql/templates/
+└─ arena_s8_vendors_cleanup.sql.template          # Arena S8 - Template (S5-S8)
 ```
 
 ### Tabla de Precios por Season
@@ -340,7 +341,7 @@ SELECT entry, name FROM item_template WHERE name LIKE '%Relentless%' ORDER BY en
 **Template para cada bracket:**
 
 ```sql
--- Archivo: src/Bracket_70_2_1/sql/world/vendors_cleanup_s1.sql
+-- Archivo (template): src/Bracket_70_2_1/sql/templates/arena_s1_vendors_cleanup.sql.template
 -- =====================================================
 -- ARENA SEASON 1 - CLEANUP & ADD
 -- Bracket: 70_2_1 (TBC S1)
@@ -348,37 +349,36 @@ SELECT entry, name FROM item_template WHERE name LIKE '%Relentless%' ORDER BY en
 
 -- LIMPIAR: Borrar todo excepto items válidos
 DELETE FROM npc_vendor 
-WHERE entry = [GADGETZAN_VENDOR_ID] 
-  AND item_template NOT IN (
-    [S1_ITEM_1], [S1_ITEM_2], ... [S1_ITEM_60]
-  );
+WHERE entry = [VENDOR_ID]
+  AND item NOT IN ([S1_ITEM_1], [S1_ITEM_2], ... [S1_ITEM_60]);
 
--- AGREGAR: Insertar items S1 con precios
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, price_1)
+-- AGREGAR: Insertar items S1 con ExtendedCost blizzlike
+INSERT INTO npc_vendor (entry, slot, item, maxcount, incrtime, ExtendedCost, VerifiedBuild)
 VALUES
-  ([GADGETZAN_VENDOR_ID], [S1_ITEM_1], 0, 0, 0, 150000),
-  ([GADGETZAN_VENDOR_ID], [S1_ITEM_2], 0, 0, 0, 150000),
-  -- ... 60 items total ...
+  ([VENDOR_ID], 0, [S1_ITEM_1], 0, 0, [EXTENDED_COST_ID_1], 0),
+  ([VENDOR_ID], 0, [S1_ITEM_2], 0, 0, [EXTENDED_COST_ID_2], 0)
+  -- ... etc ...
 ;
 
 -- VALIDAR
 SELECT COUNT(*) as s1_items FROM npc_vendor 
-WHERE entry = [GADGETZAN_VENDOR_ID];
+WHERE entry = [VENDOR_ID];
 -- Resultado esperado: 60
 ```
 
 ### Paso 4: Ejecutar en Servidor
 
 ```bash
-# 1. Copiar archivos SQL a carpetas correctas
-cp vendors_cleanup_s1.sql ~/azerothcore-wotlk/data/sql/updates/...
+# 1. Copiar un template y convertirlo en update ejecutable (.sql)
+# (Completa placeholders antes)
+cp src/Bracket_70_2_1/sql/templates/arena_s1_vendors_cleanup.sql.template ~/azerothcore-wotlk/data/sql/updates/arena_s1_vendors_cleanup.sql
 
 # 2. Recargar scripts en servidor
 .server info  # Verifica que el módulo está cargado
 .reload scripts
 
-# 3. Ejecutar SQL scripts (si los ejecutas manualmente)
-mysql world < vendors_cleanup_s1.sql
+# 3. Ejecutar SQL script (si lo ejecutas manualmente)
+mysql world < arena_s1_vendors_cleanup.sql
 ```
 
 ### Paso 5: Validar en Juego
@@ -387,7 +387,7 @@ mysql world < vendors_cleanup_s1.sql
 Bracket_70_2_1 (TBC S1):
 [ ] Vendor visible en Gadgetzan
 [ ] Solo items de S1 disponibles
-[ ] Precio ~150,000 gold
+[ ] Costes via ExtendedCost (blizzlike)
 
 Bracket_70_2_2 (TBC S2):
 [ ] Vendor visible en Gadgetzan
@@ -398,7 +398,7 @@ Bracket_80_1_2 (WotLK S5):
 [ ] Gadgetzan vendor desaparecido
 [ ] Nuevo vendor en Dalaran
 [ ] Solo items de S5 disponibles
-[ ] Precio ~250,000 gold
+[ ] Costes via ExtendedCost (blizzlike)
 ```
 
 ---
@@ -407,36 +407,41 @@ Bracket_80_1_2 (WotLK S5):
 
 ### Vendor no visible
 ```sql
--- Verificar que el vendor esté activo
-SELECT entry, name, enabled FROM creature WHERE entry = [VENDOR_ID];
+-- Verificar que el NPC tenga flag de vendor (bit 128)
+SELECT entry, name, npcflag
+FROM creature_template
+WHERE entry = [VENDOR_ID];
 
--- Activar si está desactivado
-UPDATE creature SET enabled = 1 WHERE entry = [VENDOR_ID];
+-- Activar flag vendor (bit 128)
+UPDATE creature_template
+SET npcflag = (npcflag | 128)
+WHERE entry = [VENDOR_ID];
 ```
 
 ### Items incorrectos mostrando
 ```sql
 -- Verificar qué items tiene el vendor
-SELECT nv.entry, nv.item_template, it.name, nv.price_1
+SELECT nv.entry, nv.item, it.name, nv.ExtendedCost
 FROM npc_vendor nv
-INNER JOIN item_template it ON nv.item_template = it.entry
+INNER JOIN item_template it ON nv.item = it.entry
 WHERE nv.entry = [VENDOR_ID]
-ORDER BY nv.item_template;
+ORDER BY nv.item;
 
 -- Ejecutar limpieza manualmente
 DELETE FROM npc_vendor WHERE entry = [VENDOR_ID];
 ```
 
-### Precios incorrectos
+### ExtendedCost incorrecto
 ```sql
--- Verificar precios
-SELECT nv.entry, nv.item_template, nv.price_1 
+-- Verificar ExtendedCost
+SELECT nv.entry, nv.item, nv.ExtendedCost
 FROM npc_vendor nv
 WHERE nv.entry = [VENDOR_ID];
 
--- Actualizar precios
-UPDATE npc_vendor SET price_1 = [CORRECT_PRICE] 
-WHERE entry = [VENDOR_ID] AND item_template = [ITEM_ID];
+-- Actualizar ExtendedCost
+UPDATE npc_vendor
+SET ExtendedCost = [CORRECT_EXTENDED_COST_ID]
+WHERE entry = [VENDOR_ID] AND item = [ITEM_ID];
 ```
 
 ---
@@ -488,16 +493,18 @@ Este proyecto está bajo licencia GPL 3.0. Ver archivo [LICENSE](LICENSE) para m
 
 Los archivos SQL template están listos pero necesitan ser **personalizados y ejecutados** en tu base de datos MySQL:
 
-1. **Templates creados** (9 archivos en `/src/Bracket_*/sql/world/`):
-   - `vendors_cleanup_s1.sql` hasta `vendors_cleanup_s8.sql`
-   - `vendors_transition_tbc_to_wotlk.sql`
+1. **Templates creados** (en `/src/Bracket_*/sql/templates/`):
+  - `arena_s1_vendors_cleanup.sql.template` hasta `arena_s8_vendors_cleanup.sql.template`
+  - `transition_tbc_to_wotlk_vendors.sql.template`
+
+  Nota producción: `src/**/sql/world/vendors_*.sql` son stubs (comentarios) para que el DBUpdater no ejecute placeholders.
 
 2. **Qué hacer ahora**:
   - Lee [IMPLEMENTACION_VENDORS_SQL.md](IMPLEMENTACION_VENDORS_SQL.md)
   - Obtén los **vendor entries** reales (Horde/Alliance) en `creature_template`
   - Obtén los **ExtendedCost IDs** reales en `item_extended_cost` / vendors existentes
   - Reemplaza los placeholders en cada template con valores reales
-  - Ejecuta los scripts en tu servidor MySQL
+  - Guarda una copia como `.sql` y ejecútala (manual o como update)
 
 3. **Estimado de tiempo**: ~57 minutos total
 
@@ -506,6 +513,24 @@ Los archivos SQL template están listos pero necesitan ser **personalizados y ej
 **Última actualización**: 2025-01-09  
 **Versión**: 1.0  
 **Compatibilidad**: AzerothCore 3.3.5a
+
+---
+
+## 🙏 Créditos y Agradecimientos
+
+Este proyecto está basado y inspirado en el repositorio original de AzerothCore:
+
+- https://github.com/azerothcore/mod-progression-system
+
+Gracias a AzerothCore y a los contribuidores originales por el trabajo y la base técnica sobre la que se construye este fork.
+
+---
+
+## ✍️ Firma
+
+Fork/maintainer: Kambi (mod-progression-blizzlike)
+
+Fecha: 2025-12-24
 
 ```
 Creado con ❤️ para la comunidad de AzerothCore

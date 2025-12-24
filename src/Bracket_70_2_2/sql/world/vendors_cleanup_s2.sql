@@ -1,35 +1,4 @@
--- =====================================================
--- ARENA SEASON 2 - VENDORS CLEANUP (BLIZZLIKE)
--- Bracket: 70_2_2 (TBC)
--- Fecha: May 15, 2007
--- =====================================================
--- INSTRUCCIONES:
--- 1. Reemplaza [S2_VENDOR_ENTRIES] con los NPC entry reales del vendor
--- 2. Agregar: Items S1 (legacy) + Items S2 (nuevos) con ExtendedCost correcto
--- =====================================================
-
-DELETE FROM `npc_vendor`
-WHERE `entry` IN ([S2_VENDOR_ENTRIES])
-  AND `item` NOT IN (
-    -- S1 Items (legacy)
-    [S1_ITEM_IDS],
-    -- S2 Items (nuevos)
-    [S2_ITEM_IDS]
-  );
-
-INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
-VALUES
-  -- S1 Items (LEGACY)
-  [S1_ITEMS_WITH_EXTENDEDCOST_LEGACY],
-  
-  -- S2 Items (NUEVOS)
-  [S2_ITEMS_WITH_EXTENDEDCOST_NEW]
-;
-
--- VALIDACIÓN
-SELECT 
-  COUNT(*) as total_items,
-  COUNT(DISTINCT `item`) as unique_items,
-  COUNT(DISTINCT `ExtendedCost`) as unique_costs
-FROM `npc_vendor`
-WHERE `entry` IN ([S2_VENDOR_ENTRIES]);
+-- STUB / PRODUCCIÓN:
+-- Este archivo se deja intencionalmente sin SQL ejecutable.
+-- Motivo: era un TEMPLATE con placeholders ([...]) y rompía el autoload.
+-- Template real: ../templates/arena_s2_vendors_cleanup.sql.template

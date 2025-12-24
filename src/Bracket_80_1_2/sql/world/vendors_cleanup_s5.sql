@@ -1,21 +1,4 @@
--- =====================================================
--- ARENA SEASON 5 - VENDORS CLEANUP (BLIZZLIKE)
--- Bracket: 80_1_2 (WotLK Start)
--- Fecha: Nov 13, 2008
--- NOTA: Esto es un NUEVO COMIENZO - no hay items heredados
--- =====================================================
-
-DELETE FROM `npc_vendor`
-WHERE `entry` IN ([S5_VENDOR_ENTRIES])
-  AND `item` NOT IN (
-    -- S5 Items SOLAMENTE (Wrathful Gladiator Early)
-    [S5_ITEM_IDS]
-  );
-
-INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
-VALUES
-  -- S5 New
-  [S5_ITEMS_WITH_EXTENDEDCOST_NEW]
-;
-
-SELECT COUNT(*) as total_items FROM `npc_vendor` WHERE `entry` IN ([S5_VENDOR_ENTRIES]);
+-- STUB / PRODUCCIÓN:
+-- Este archivo se deja intencionalmente sin SQL ejecutable.
+-- Motivo: era un TEMPLATE con placeholders ([...]) y rompía el autoload.
+-- Template real: ../templates/arena_s5_vendors_cleanup.sql.template

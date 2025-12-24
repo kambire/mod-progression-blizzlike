@@ -1,24 +1,4 @@
--- =====================================================
--- ARENA SEASON 6 - VENDORS CLEANUP (BLIZZLIKE)
--- Bracket: 80_2 (WotLK)
--- Fecha: Mar 17, 2009
--- =====================================================
-
-DELETE FROM `npc_vendor`
-WHERE `entry` IN ([S6_VENDOR_ENTRIES])
-  AND `item` NOT IN (
-    -- S5 Legacy
-    [S5_ITEM_IDS],
-    -- S6 New
-    [S6_ITEM_IDS]
-  );
-
-INSERT INTO `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`, `VerifiedBuild`)
-VALUES
-  -- S5 Legacy
-  [S5_ITEMS_WITH_EXTENDEDCOST_LEGACY],
-  -- S6 New
-  [S6_ITEMS_WITH_EXTENDEDCOST_NEW]
-;
-
-SELECT COUNT(*) as total_items FROM `npc_vendor` WHERE `entry` IN ([S6_VENDOR_ENTRIES]);
+-- STUB / PRODUCCIÓN:
+-- Este archivo se deja intencionalmente sin SQL ejecutable.
+-- Motivo: era un TEMPLATE con placeholders ([...]) y rompía el autoload.
+-- Template real: ../templates/arena_s6_vendors_cleanup.sql.template

@@ -202,9 +202,10 @@
 
 ### Bracket_70_2_2
 **Level Range**: 70  
-**Content**: Karazhan (Raid Tier 1), Arena Season 1  
+**Content**: Karazhan (Raid Tier 1), Arena Season 2  
 **Description**: 10-man raid instance set in the mystical tower of Medivh. More accessible than 25-man raids but requiring solid coordination and skill. Features multiple boss encounters and unique mechanics.  
 **Raid Instance**: Karazhan (10-man, 11 encounters)  
+**Arena Content**: Season 2 (Merciless gear) - Continues seasonal PvP progression  
 **Release Date**: January 16, 2007  
 **Highlights**: 10-man format accessibility, Medivh lore, multiple bosses in tower progression, attunement quest  
 **Bosses**: Attumen the Huntsman, Moroes, Maiden of Virtue, Opera, Shade of Aran, Illhoof, Chess Event, Prince Malchezaar  
@@ -497,7 +498,7 @@
 | Bracket_70_1_1 | 70 | TBC | Dungeons (Normal) | Jan 16, 2007 |
 | Bracket_70_1_2 | 70 | TBC | Dungeons (Heroic) | Jan 16, 2007 |
 | Bracket_70_2_1 | 70 | TBC | Gruul/Mag, Season 1 | Jan 16, 2007 |
-| Bracket_70_2_2 | 70 | TBC | Karazhan, Season 1 | Jan 16, 2007 |
+| Bracket_70_2_2 | 70 | TBC | Karazhan, Season 2 | Jan 16, 2007 |
 | Bracket_70_2_3 | 70 | TBC | Ogri'la (World) | Mar 19, 2008 |
 | Bracket_70_3_1 | 70 | TBC | SSC | May 15, 2007 |
 | Bracket_70_3_2 | 70 | TBC | The Eye, Season 2 | May 15, 2007 |

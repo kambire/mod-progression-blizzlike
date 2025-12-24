@@ -116,7 +116,7 @@ ProgressionSystem.RestrictArenaRewards = 1
 -- ============================================
 DELETE FROM npc_vendor 
 WHERE entry = [VENDOR_NPC_ID] 
-  AND item_template NOT IN (
+  AND item NOT IN (
     SELECT entry FROM item_template 
     WHERE name LIKE '%[VALID_SEASON_NAME]%'
   );
@@ -124,10 +124,10 @@ WHERE entry = [VENDOR_NPC_ID]
 -- ============================================
 -- AGREGACIÓN: Insertar items correctos
 -- ============================================
-INSERT INTO npc_vendor (entry, item_template, maxcount, incrtime, slot, comments, price_1)
+INSERT INTO npc_vendor (entry, slot, item, maxcount, incrtime, ExtendedCost, VerifiedBuild)
 VALUES
-  ([VENDOR_ID], [ITEM_ID_1], 0, 0, 0, '[ITEM_NAME] - [SEASON]', [PRICE]),
-  ([VENDOR_ID], [ITEM_ID_2], 0, 0, 0, '[ITEM_NAME] - [SEASON]', [PRICE]),
+  ([VENDOR_ID], 0, [ITEM_ID_1], 0, 0, [EXTENDED_COST_ID_1], 0),
+  ([VENDOR_ID], 0, [ITEM_ID_2], 0, 0, [EXTENDED_COST_ID_2], 0),
   -- ... más items ...
 ;
 
@@ -151,17 +151,15 @@ WHERE entry = [VENDOR_NPC_ID];
 
 ```sql
 -- Cuando cambia de TBC a WotLK
--- Desactivar Gadgetzan
-UPDATE creature 
-SET enabled = 0, npcflag = 0
-WHERE entry IN (SELECT entry FROM creature WHERE name LIKE '%Gadgetzan%')
-  AND map = 1;
+-- Desactivar vendors TBC (quitar flag vendor bit 128)
+UPDATE creature_template
+SET npcflag = (npcflag & ~128)
+WHERE entry IN ([TBC_VENDOR_ENTRIES]);
 
--- Activar Dalaran
-UPDATE creature 
-SET enabled = 1, npcflag = 128
-WHERE entry IN (SELECT entry FROM creature WHERE name LIKE '%Dalaran%')
-  AND map = 571;
+-- Activar vendors WotLK (agregar flag vendor bit 128)
+UPDATE creature_template
+SET npcflag = (npcflag | 128)
+WHERE entry IN ([WOTLK_VENDOR_ENTRIES]);
 ```
 
 ---
@@ -335,7 +333,7 @@ for (const auto& bracket : ProgressionBracketsNames) {
 }
 
 // 2. Construir paths para cada DB
-// Path pattern: /modules/mod-progression-system/src/Bracket_[NAME]/sql/[DB_TYPE]
+// Path pattern: /modules/mod-progression-blizzlike/src/Bracket_[NAME]/sql/[DB_TYPE]
 
 // 3. Orden de ejecución:
 // 3a. Login Database updates (auth folder)
