@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WOWESPY — Guía de Progresión</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #0f1a31;
+      --panel2: #0c152b;
+      --text: #e8eefc;
+      --muted: #b9c3dd;
+      --border: rgba(255, 255, 255, 0.10);
+      --accent: #7aa2ff;
+      --good: #52d2a8;
+      --warn: #ffcd6a;
+      --bad: #ff6b7a;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 900px at 15% 10%, rgba(122,162,255,0.18), transparent 55%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(82,210,168,0.12), transparent 45%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 22px 16px 40px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+
+    .title {
+      display:flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    h1 { font-size: 22px; margin: 0; letter-spacing: 0.2px; }
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .controls {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mode {
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .mode legend {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0 6px;
+    }
+
+    fieldset { border: 1px solid transparent; margin: 0; padding: 0; }
+
+    .radio {
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      border-radius: 999px;
+      padding: 4px;
+    }
+
+    .radio label {
+      display:inline-flex;
+      gap: 8px;
+      align-items:center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 13px;
+      color: var(--muted);
+      transition: background 120ms ease;
+    }
+
+    .radio input { display:none; }
+
+    .radio input:checked + span {
+      color: var(--text);
+      background: rgba(122,162,255,0.18);
+      border: 1px solid rgba(122,162,255,0.35);
+    }
+
+    .radio span {
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid transparent;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.03);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-head {
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      display:flex;
+      gap: 10px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    .section-title .desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    @media (min-width: 860px) {
+      header { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      padding: 12px;
+      min-height: 140px;
+    }
+
+    .card-top {
+      display:flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .kv {
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .tag {
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+
+    .list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .list li {
+      display:flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      margin-top: 4px;
+      flex: 0 0 10px;
+      background: var(--good);
+      box-shadow: 0 0 0 3px rgba(82,210,168,0.12);
+    }
+
+    .dot.warn {
+      background: var(--warn);
+      box-shadow: 0 0 0 3px rgba(255,205,106,0.12);
+    }
+
+    .mono { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+    .footer {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.03);
+      padding: 12px 14px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+    }
+
+    .sig {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sig strong {
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+
+    .integrity {
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap: 8px;
+      align-items:center;
+    }
+
+    .status {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--good);
+    }
+
+    .status.bad { background: var(--bad); }
+
+    .hidden { display: none !important; }
+
+    .notice {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 107, 122, 0.35);
+      background: rgba(255, 107, 122, 0.10);
+      color: var(--text);
+    }
+
+    .notice h3 { margin: 0 0 6px; font-size: 14px; }
+    .notice p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>WOWESPY — Guía de Progresión (AzerothCore)</h1>
+        <span class="pill">mod-progression-system</span>
+        <span class="pill">MySQL 8.x</span>
+        <span class="pill">3.3.5a</span>
+      </div>
+
+      <div class="controls">
+        <fieldset class="mode">
+          <legend>Modo de guía</legend>
+          <div class="radio" role="group" aria-label="Modo">
+            <label>
+              <input type="radio" name="mode" value="0" />
+              <span><span class="mono">0</span> Gratis (resumen)</span>
+            </label>
+            <label>
+              <input type="radio" name="mode" value="1" />
+              <span><span class="mono">1</span> Activado (detalle)</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="help">
+          Elegí el modo con el selector. Si sos jugador y no sabés tu bracket: preguntá al admin qué <span class="mono">ProgressionSystem.Bracket_*</span> está activo.
+        </div>
+      </div>
+
+      <div id="integrityNotice" class="notice hidden" role="alert">
+        <h3>Integridad</h3>
+        <p>Este archivo parece haber sido modificado. La guía podría ser incorrecta.</p>
+      </div>
+    </header>
+
+    <div id="content" class="grid"></div>
+
+    <div class="footer">
+      <div class="sig"><strong id="sigText"></strong></div>
+      <div class="integrity"><span id="integrityDot" class="status" aria-hidden="true"></span><span id="integrityText">Integridad: OK</span></div>
+    </div>
+  </div>
+
+  <script>
+    // =====================
+    // CONFIG
+    // =====================
+    // Editá este valor si querés fijar el modo por defecto.
+    const WOWESPY_DEFAULT_MODE = 1; // 0=gratis, 1=activado
+
+    // =====================
+    // FIRMA (ofuscada)
+    // =====================
+    function signatureText() {
+      const bytes = [
+        0x77,0x6F,0x77,0x65,0x73,0x70,0x79,0x20,
+        0x64,0x65,0x73,0x61,0x72,0x72,0x6F,0x6C,0x6C,0x61,0x64,0x6F,0x20,
+        0x70,0x6F,0x72,0x20,
+        0x6B,0x61,0x6D,0x62,0x69,0x72,0x65
+      ];
+      return String.fromCharCode(...bytes);
+    }
+
+    // sha256("wowespy desarrollado por kambire")
+    const EXPECTED_SIG_SHA256 = "b5d4a5dcf9c96f0a62f8e14b5b8c93b67e2c0b1a82d2f65516dc18ed1e0b4d7f";
+
+    async function sha256Hex(str) {
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+      const bytes = Array.from(new Uint8Array(buf));
+      return bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function integrityCheck() {
+      // Nota: esto es detección (tamper-evident), no anti-tamper absoluto.
+      const sig = signatureText();
+      const got = await sha256Hex(sig);
+      const ok = (got === EXPECTED_SIG_SHA256);
+
+      document.getElementById("sigText").textContent = sig;
+
+      const dot = document.getElementById("integrityDot");
+      const txt = document.getElementById("integrityText");
+      const notice = document.getElementById("integrityNotice");
+
+      if (!ok) {
+        dot.classList.add("bad");
+        txt.textContent = "Integridad: ERROR";
+        notice.classList.remove("hidden");
+      }
+
+      return ok;
+    }
+
+    // =====================
+    // DATA
+    // =====================
+    // Objetivo: explicación "a prueba de tontos".
+    // - Cada card dice: qué es, qué podés hacer, y qué NO corresponde todavía.
+    // - En modo 0 mostramos solo lo esencial.
+
+    const BRACKETS = [
+      {
+        expansion: "Vanilla",
+        subtitle: "1–60 (progresión clásica)",
+        items: [
+          { key: "Bracket_0", level: "1–10", title: "Inicio", can: [
+            "Hacer misiones iniciales y aprender tu clase.",
+            "Explorar y conseguir equipo básico.",
+            "Profesiones: empezar a subirlas."
+          ], also: ["Dungeons de bajo nivel (si el server los habilita)."] },
+          { key: "Bracket_1_19", level: "10–19", title: "Temprano", can: [
+            "Dungeons tempranos y misiones de zona.",
+            "Empezar a armar set de leveleo."
+          ], also: ["PvP/World PvP si el server lo permite."] },
+          { key: "Bracket_20_29", level: "20–29", title: "Medio", can: [
+            "Dungeons de nivel medio.",
+            "Mejorar profesiones y reputaciones."
+          ] },
+          { key: "Bracket_30_39", level: "30–39", title: "Avanzando", can: [
+            "Dungeons más exigentes.",
+            "Prepararte para el contenido 40+."
+          ] },
+          { key: "Bracket_40_49", level: "40–49", title: "Pre-raid", can: [
+            "Farmear equipo pre-raid (según tu server).",
+            "Hacer cadenas de llaves/attunements si existen."
+          ], also: ["Montura y economía cobran importancia."] },
+          { key: "Bracket_50_59_1", level: "50–59", title: "UBRS (attunement)", can: [
+            "Prepararte para UBRS y contenido final.",
+            "Consumibles, resistencias y gear pre-raid."
+          ] },
+          { key: "Bracket_50_59_2", level: "50–59", title: "UBRS (progresión)", can: [
+            "Acceso completo a UBRS (si aplica).",
+            "Último paso antes de raids 60."
+          ] },
+          { key: "Bracket_60_1_1", level: "60", title: "Molten Core", can: [
+            "Raid Molten Core.",
+            "Progresión T1 / pre-BWL."
+          ] },
+          { key: "Bracket_60_1_2", level: "60", title: "Onyxia", can: [
+            "Raid Onyxia.",
+            "Complementar loot/quests relacionadas."
+          ] },
+          { key: "Bracket_60_2_1", level: "60", title: "Blackwing Lair", can: [
+            "Raid Blackwing Lair.",
+            "Progresión T2."
+          ] },
+          { key: "Bracket_60_2_2", level: "60", title: "Zul'Gurub", can: [
+            "Raid 20: Zul'Gurub (catch-up).",
+            "Reputaciones y consumibles."
+          ] },
+          { key: "Bracket_60_3_1", level: "60", title: "AQ20", can: [
+            "Raid 20: Ruins of Ahn'Qiraj.",
+            "Prepararte para AQ40."
+          ] },
+          { key: "Bracket_60_3_2", level: "60", title: "AQ40", can: [
+            "Raid 40: Temple of Ahn'Qiraj.",
+            "Contenido high-end de Vanilla."
+          ] },
+          { key: "Bracket_60_3_3", level: "60", title: "Final/Eventos", can: [
+            "Eventos y ajustes finales (según tu server).",
+            "Preparación para la transición."
+          ] }
+        ]
+      },
+      {
+        expansion: "The Burning Crusade",
+        subtitle: "61–70 + Arenas S1–S4",
+        items: [
+          { key: "Bracket_61_64", level: "61–64", title: "Outland Intro", can: [
+            "Entrar a Outland.",
+            "Hacer dungeons introductorios.",
+            "Reputaciones iniciales."
+          ] },
+          { key: "Bracket_65_69", level: "65–69", title: "Mid-Level", can: [
+            "Dungeons y cadenas de misiones de Outland.",
+            "Preparación para nivel 70."
+          ] },
+          { key: "Bracket_70_1_1", level: "70", title: "Dungeons", can: [
+            "Dungeons normales 70.",
+            "Pre-raid y reputaciones."
+          ] },
+          { key: "Bracket_70_1_2", level: "70", title: "Heroic Dungeons", can: [
+            "Dungeons heroicos (si el server los habilita).",
+            "Prepararte para raids TBC."
+          ] },
+          { key: "Bracket_70_2_1", level: "70", title: "T4 + Arena S1", can: [
+            "Raids: Gruul's / Magtheridon.",
+            "Arenas S1: Gladiator (costes blizzlike via ExtendedCost)."
+          ], also: ["Vendors de season definidos por SQL templates."] },
+          { key: "Bracket_70_2_2", level: "70", title: "Karazhan + Arena S2", can: [
+            "Raid Karazhan.",
+            "Arenas S2: Merciless (nuevo + legacy)."
+          ] },
+          { key: "Bracket_70_2_3", level: "70", title: "World (Ogri'la)", can: [
+            "Contenido de mundo (dailies/reputación) si aplica."
+          ] },
+          { key: "Bracket_70_3_1", level: "70", title: "SSC", can: [
+            "Raid Serpentshrine Cavern."
+          ] },
+          { key: "Bracket_70_3_2", level: "70", title: "The Eye + S2", can: [
+            "Raid The Eye (Tempest Keep).",
+            "Arenas S2 continua (según tu progresión)."
+          ] },
+          { key: "Bracket_70_4_1", level: "70", title: "Mount Hyjal", can: [
+            "Raid Mount Hyjal."
+          ] },
+          { key: "Bracket_70_4_2", level: "70", title: "Black Temple", can: [
+            "Raid Black Temple."
+          ] },
+          { key: "Bracket_70_5", level: "70", title: "Zul'Aman + Arena S3", can: [
+            "Raid Zul'Aman.",
+            "Arenas S3: Vengeful (nuevo + legacy)."
+          ] },
+          { key: "Bracket_70_6_1", level: "70", title: "Isle of Quel'Danas", can: [
+            "Zona final TBC (dailies/reputación) si aplica."
+          ] },
+          { key: "Bracket_70_6_2", level: "70", title: "Sunwell + Arena S4", can: [
+            "Raid Sunwell Plateau.",
+            "Arenas S4: Brutal (nuevo + legacy)."
+          ] },
+          { key: "Bracket_70_6_3", level: "70", title: "Final/Transición", can: [
+            "Fase final y preparación para WotLK."
+          ] }
+        ]
+      },
+      {
+        expansion: "Wrath of the Lich King",
+        subtitle: "71–80 + Arenas S5–S8",
+        items: [
+          { key: "Bracket_71_74", level: "71–74", title: "Northrend Intro", can: [
+            "Entrar a Northrend.",
+            "Dungeons introductorios y leveleo."
+          ] },
+          { key: "Bracket_75_79", level: "75–79", title: "Mid-Level", can: [
+            "Dungeons de rango medio.",
+            "Preparación para nivel 80."
+          ] },
+          { key: "Bracket_80_1_1", level: "80", title: "Dungeons", can: [
+            "Dungeons normales 80.",
+            "Prepararte para heroics/raids iniciales."
+          ] },
+          { key: "Bracket_80_1_2", level: "80", title: "Heroics + Arena S5 (Deadly)", can: [
+            "Dungeons heroicos (si aplica).",
+            "Arenas S5: Deadly (ExtendedCost)."
+          ] },
+          { key: "Bracket_80_2", level: "80", title: "Ulduar + Arena S6 (Furious)", can: [
+            "Raid Ulduar (según tu progresión).",
+            "Arenas S6: Furious (nuevo + legacy)."
+          ] },
+          { key: "Bracket_80_3", level: "80", title: "Trial/Onyxia + Arena S7 (Relentless)", can: [
+            "Trial/Coliseum y Onyxia 80 (si aplica).",
+            "Arenas S7: Relentless (nuevo + legacy)."
+          ] },
+          { key: "Bracket_80_4_1", level: "80", title: "ICC + Arena S8 (Wrathful)", can: [
+            "Raid Icecrown Citadel.",
+            "Arenas S8: Wrathful (nuevo + legacy)."
+          ] },
+          { key: "Bracket_80_4_2", level: "80", title: "Ruby Sanctum", can: [
+            "Raid Ruby Sanctum (si aplica)."
+          ] },
+          { key: "Bracket_Custom", level: "*", title: "Custom", can: [
+            "Contenido definido por el admin del servidor."
+          ], also: ["Revisar qué hay habilitado en el server."] }
+        ]
+      }
+    ];
+
+    // =====================
+    // RENDER
+    // =====================
+    function el(tag, attrs = {}, children = []) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (k === "class") node.className = v;
+        else if (k === "text") node.textContent = v;
+        else node.setAttribute(k, v);
+      }
+      for (const ch of children) node.appendChild(ch);
+      return node;
+    }
+
+    function render(mode) {
+      const root = document.getElementById("content");
+      root.innerHTML = "";
+
+      for (const section of BRACKETS) {
+        const head = el("div", { class: "section-head" }, [
+          el("div", { class: "section-title" }, [
+            el("h2", { text: section.expansion }),
+            el("span", { class: "desc", text: section.subtitle })
+          ]),
+          el("span", { class: "pill", text: mode === 0 ? "Modo 0" : "Modo 1" })
+        ]);
+
+        const cards = el("div", { class: "cards" });
+
+        for (const b of section.items) {
+          const canList = el("ul", { class: "list" });
+
+          // Modo 0: mostramos solo 2 bullets para que sea ultra simple.
+          const canLines = (mode === 0) ? (b.can.slice(0, 2)) : b.can;
+
+          for (const line of canLines) {
+            canList.appendChild(el("li", {}, [
+              el("span", { class: "dot" }),
+              el("span", { text: line })
+            ]));
+          }
+
+          if (mode === 1 && b.also && b.also.length) {
+            for (const line of b.also) {
+              canList.appendChild(el("li", {}, [
+                el("span", { class: "dot warn" }),
+                el("span", { text: line })
+              ]));
+            }
+          }
+
+          const card = el("div", { class: "card" }, [
+            el("div", { class: "card-top" }, [
+              el("div", {}, [
+                el("h3", { text: `${b.key} — ${b.title}` }),
+                el("div", { class: "kv" }, [
+                  el("span", { class: "tag", text: `Nivel: ${b.level}` }),
+                  el("span", { class: "tag", text: "Guía para usuarios" })
+                ])
+              ])
+            ]),
+            canList
+          ]);
+
+          cards.appendChild(card);
+        }
+
+        const sectionNode = el("div", { class: "section" }, [head, cards]);
+        root.appendChild(sectionNode);
+      }
+    }
+
+    function setMode(mode) {
+      const radios = document.querySelectorAll('input[name="mode"]');
+      for (const r of radios) r.checked = (Number(r.value) === mode);
+      render(mode);
+    }
+
+    async function main() {
+      await integrityCheck();
+
+      const radios = document.querySelectorAll('input[name="mode"]');
+      for (const r of radios) {
+        r.addEventListener("change", () => {
+          const mode = Number(document.querySelector('input[name="mode"]:checked').value);
+          render(mode);
+        });
+      }
+
+      // Inicializar modo
+      setMode(WOWESPY_DEFAULT_MODE);
+    }
+
+    main();
+  </script>
+</body>
+</html>
