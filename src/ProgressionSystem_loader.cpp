@@ -97,6 +97,19 @@ namespace
     };
 }
 
+static void ProgressionSystemLogEffectiveConfig()
+{
+    bool const loadScripts = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadScripts", true);
+    bool const loadDatabase = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadDatabase", true);
+    bool const reapplyUpdates = sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false);
+
+    LOG_INFO("server.server",
+        "[mod-progression-blizzlike] Effective config: LoadScripts={} LoadDatabase={} ReapplyUpdates={}",
+        loadScripts ? 1 : 0, loadDatabase ? 1 : 0, reapplyUpdates ? 1 : 0);
+    LOG_INFO("server.server",
+        "[mod-progression-blizzlike] If these values do not match your expectations, ensure your config is copied to etc/modules/*.conf (e.g. etc/modules/progression_system.conf) and contains a [worldserver] section.");
+}
+
 static void ProgressionSystemWarnUnsupportedConfigOptions()
 {
     bool anyWarned = false;
@@ -188,6 +201,8 @@ void AddSC_progression_module_commandscript();
 void Addmod_progression_systemScripts()
 {
     ProgressionSystemWarnUnsupportedConfigOptions();
+
+    ProgressionSystemLogEffectiveConfig();
 
     AddProgressionSystemScripts();
     AddSC_progression_module_commandscript();

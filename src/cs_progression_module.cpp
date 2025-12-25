@@ -44,10 +44,21 @@ public:
     {
         handler->SendSysMessage("Progression Module Settings");
 
-        for (std::string const& bracketName : ProgressionBracketsNames)
-            handler->PSendSysMessage("Bracket: {} (Enabled: {})", bracketName, (sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false)));
-
+        handler->PSendSysMessage("LoadScripts: {}", sConfigMgr->GetOption<bool>("ProgressionSystem.LoadScripts", true));
+        handler->PSendSysMessage("LoadDatabase: {}", sConfigMgr->GetOption<bool>("ProgressionSystem.LoadDatabase", true));
         handler->PSendSysMessage("ReapplyUpdates: {}", sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false));
+        handler->PSendSysMessage("DisabledAttunements: '{}'", sConfigMgr->GetOption<std::string>("ProgressionSystem.DisabledAttunements", ""));
+
+        uint32 enabledCount = 0;
+
+        for (std::string const& bracketName : ProgressionBracketsNames)
+        {
+            bool const enabled = sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false);
+            enabledCount += enabled ? 1 : 0;
+            handler->PSendSysMessage("Bracket: {} (Enabled: {})", bracketName, enabled);
+        }
+
+        handler->PSendSysMessage("Enabled brackets: {}", enabledCount);
 
         return true;
     }

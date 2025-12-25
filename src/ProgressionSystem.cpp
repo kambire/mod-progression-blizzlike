@@ -7,13 +7,49 @@
 #include "Tokenize.h"
 #include "StringConvert.h"
 
+#include <filesystem>
+
+inline std::string DetermineBracketBasePath(std::string const& folderName)
+{
+    namespace fs = std::filesystem;
+
+    // Worldserver's working directory differs depending on how it is launched (Windows service,
+    // IDE, acore.sh, etc). Probe a few common relative locations.
+    std::array<std::string, 5> const candidates =
+    {
+        "modules/mod-progression-blizzlike/src/Bracket_",
+        "../modules/mod-progression-blizzlike/src/Bracket_",
+        "../../modules/mod-progression-blizzlike/src/Bracket_",
+        "../../../modules/mod-progression-blizzlike/src/Bracket_",
+        "../../../../modules/mod-progression-blizzlike/src/Bracket_",
+    };
+
+    for (std::string const& base : candidates)
+    {
+        // Use a known always-present bracket folder to test existence.
+        fs::path const probe = fs::path(base + "0") / "sql" / folderName;
+        if (fs::exists(probe) && fs::is_directory(probe))
+        {
+            LOG_INFO("server.server", "[mod-progression-blizzlike] Using bracket SQL base path: '{}'", base);
+            return base;
+        }
+    }
+
+    LOG_WARN("server.server",
+        "[mod-progression-blizzlike] Could not locate bracket SQL folders from the current working directory. "
+        "Tried common relative paths like './modules/...'. Falling back to 'modules/mod-progression-blizzlike/src/Bracket_'.");
+    return "modules/mod-progression-blizzlike/src/Bracket_";
+}
+
 inline std::vector<std::string> GetDatabaseDirectories(std::string const& folderName)
 {
     std::vector<std::string> directories;
 
+    namespace fs = std::filesystem;
+
     // DBUpdater expects paths relative to the worldserver working directory.
     // Using a relative path here avoids platform-specific absolute paths.
-    std::string const path = "modules/mod-progression-blizzlike/src/Bracket_";
+    std::string const path = DetermineBracketBasePath(folderName);
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
         if (!(sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false)))
@@ -22,8 +58,21 @@ inline std::vector<std::string> GetDatabaseDirectories(std::string const& folder
         }
 
         std::string bracketPath = path + bracketName + "/sql/" + folderName;
+        fs::path const bracketDir = fs::path(bracketPath);
+        if (!fs::exists(bracketDir) || !fs::is_directory(bracketDir))
+        {
+            LOG_WARN("server.server",
+                "[mod-progression-blizzlike] Enabled bracket '{}' but SQL directory not found: '{}' (cwd-sensitive)",
+                bracketName, bracketPath);
+            continue;
+        }
+
         directories.push_back(std::move(bracketPath));
     }
+
+    LOG_INFO("server.server",
+        "[mod-progression-blizzlike] DBUpdater will scan {} '{}' directories.",
+        directories.size(), folderName);
 
     return directories;
 }
