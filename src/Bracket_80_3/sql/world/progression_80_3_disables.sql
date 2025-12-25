@@ -26,6 +26,12 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 -- Make the quests  Lord Jaraxxus Must Die! and available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24589;
 
+-- Archmage Lan'dalock quest: must NOT be available until Bracket_80_4.
+-- https://www.wowhead.com/wotlk/quest=24582/instructor-razuvious-must-die
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24582;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(1, 24582, 0, '', '', "[mod-progression-blizzlike] Lan'dalock: Instructor Razuvious Must Die");
+
 -- Argent Tournament: unlock in Bracket_80_3.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (
 	13667, 13668, 13633, 13634,

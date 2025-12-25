@@ -19,6 +19,10 @@ DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 724;
 -- Make the quest Assault on the Sanctum available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
 
+-- Unlock Archmage Lan'dalock quest
+-- https://www.wowhead.com/wotlk/quest=24582/instructor-razuvious-must-die
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24582;
+
 -- Argent Tournament: should be available from Bracket_80_3 onward.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (
 	13667, 13668, 13633, 13634,

@@ -19,6 +19,10 @@ DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (631,632,658,
 -- Make the quests Inside the Frozen Citadel available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (24506, 24510);
 
+-- Unlock Archmage Lan'dalock quest
+-- https://www.wowhead.com/wotlk/quest=24582/instructor-razuvious-must-die
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24582;
+
 -- Argent Tournament: should be available from Bracket_80_3 onward.
 -- This also prevents bracket-skips (e.g. 80_2 -> 80_4_1) from leaving AT locked.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (

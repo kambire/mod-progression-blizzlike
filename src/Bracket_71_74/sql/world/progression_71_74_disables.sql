@@ -35,6 +35,12 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 (8, 649, 15, '', '', '[mod-progression-blizzlike] Locked (RDF): Trial of the Crusader'),
 (8, 650, 3, '', '', '[mod-progression-blizzlike] Locked (RDF): Trial of the Champion');
 
+-- Archmage Lan'dalock quest: must NOT be available until Bracket_80_4.
+-- https://www.wowhead.com/wotlk/quest=24582/instructor-razuvious-must-die
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24582;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(1, 24582, 0, '', '', "[mod-progression-blizzlike] Lan'dalock: Instructor Razuvious Must Die");
+
 -- Argent Tournament: should NOT be available at the start of WotLK.
 -- We block all known AT quest IDs here (deny-by-default). Bracket_80_3 will unlock them.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (
