@@ -10,6 +10,74 @@
 #include <filesystem>
 #include <unordered_set>
 
+namespace
+{
+    struct ArenaSeasonMappingDefault
+    {
+        char const* seasonKey;
+        char const* enabledKey;
+        char const* defaultValue;
+    };
+
+    ArenaSeasonMappingDefault constexpr kArenaSeasonDefaults[] =
+    {
+        { "ProgressionSystem.Bracket.ArenaSeason1", "ProgressionSystem.Bracket.ArenaSeason1.Enabled", "Bracket_70_2_1,Bracket_70_2_2" },
+        { "ProgressionSystem.Bracket.ArenaSeason2", "ProgressionSystem.Bracket.ArenaSeason2.Enabled", "Bracket_70_2_2,Bracket_70_3_2,Bracket_70_4_1" },
+        { "ProgressionSystem.Bracket.ArenaSeason3", "ProgressionSystem.Bracket.ArenaSeason3.Enabled", "Bracket_70_5" },
+        { "ProgressionSystem.Bracket.ArenaSeason4", "ProgressionSystem.Bracket.ArenaSeason4.Enabled", "Bracket_70_6_2" },
+        { "ProgressionSystem.Bracket.ArenaSeason5", "ProgressionSystem.Bracket.ArenaSeason5.Enabled", "Bracket_80_1_2" },
+        { "ProgressionSystem.Bracket.ArenaSeason6", "ProgressionSystem.Bracket.ArenaSeason6.Enabled", "Bracket_80_2" },
+        { "ProgressionSystem.Bracket.ArenaSeason7", "ProgressionSystem.Bracket.ArenaSeason7.Enabled", "Bracket_80_3" },
+        { "ProgressionSystem.Bracket.ArenaSeason8", "ProgressionSystem.Bracket.ArenaSeason8.Enabled", "Bracket_80_4_1" },
+    };
+
+    inline std::string Trim(std::string s)
+    {
+        auto const first = s.find_first_not_of(" \t\r\n");
+        if (first == std::string::npos)
+            return std::string();
+        auto const last = s.find_last_not_of(" \t\r\n");
+        s = s.substr(first, last - first + 1);
+        return s;
+    }
+}
+
+bool IsProgressionBracketEnabled(std::string const& bracketName)
+{
+    if (sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false))
+        return true;
+
+    // ArenaSeason mapping aliases (if enabled).
+    for (ArenaSeasonMappingDefault const& season : kArenaSeasonDefaults)
+    {
+        if (!sConfigMgr->GetOption<bool>(season.enabledKey, false))
+            continue;
+
+        std::string mapping = sConfigMgr->GetOption<std::string>(season.seasonKey, season.defaultValue);
+        mapping = Trim(std::move(mapping));
+        if (mapping.empty())
+            continue;
+
+        for (auto tokenView : Acore::Tokenize(mapping, ',', false))
+        {
+            std::string token(tokenView);
+            token = Trim(std::move(token));
+            if (token.empty())
+                continue;
+
+            // Accept both "Bracket_80_2" and "80_2".
+            constexpr char const* kPrefix = "Bracket_";
+            if (token.rfind(kPrefix, 0) == 0)
+                token.erase(0, std::char_traits<char>::length(kPrefix));
+
+            if (token == bracketName)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 inline std::string DetermineModuleBracketBasePath()
 {
     namespace fs = std::filesystem;
@@ -54,7 +122,7 @@ inline std::vector<std::string> GetDatabaseDirectories(std::string const& folder
     std::string const path = DetermineModuleBracketBasePath();
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
-        if (!(sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false)))
+        if (!IsProgressionBracketEnabled(bracketName))
         {
             continue;
         }
@@ -103,7 +171,7 @@ static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string con
 
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
-        if (!sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false))
+        if (!IsProgressionBracketEnabled(bracketName))
             continue;
 
         std::string const dirPrefix = base + bracketName + "/sql/" + folderName + "/";
@@ -139,7 +207,7 @@ static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> con
 
         do
         {
-            applied.insert((*result)[0].Get<std::string>());
+            applied.insert((*result)[0].template Get<std::string>());
         } while (result->NextRow());
     }
 

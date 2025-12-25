@@ -8,7 +8,7 @@ void AddSC_instance_molten_core_60_1_A();
 
 void AddBracket_60_1_A_Scripts()
 {
-    if (!(sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_60_1_2", false)))
+    if (!IsProgressionBracketEnabled("60_1_2"))
         return;
 
     AddSC_instance_molten_core_60_1_A();

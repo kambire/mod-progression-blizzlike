@@ -791,6 +791,10 @@ ProgressionSystem.DisabledAttunements = ""
 #    BRACKET -> ARENA SEASON MAPPING (Simple mapping keys)
 #        Description: Define which bracket(s) host each Arena Season's PvP vendors/items.
 #                     Use comma-separated bracket identifiers. Each season also has an Enabled toggle.
+#
+#                     NOTE: In this module, enabling an ArenaSeason mapping makes the listed brackets
+#                     effectively enabled (same behavior as setting ProgressionSystem.Bracket_<name> = 1)
+#                     for both SQL loading and script loading.
 #        Example: ProgressionSystem.Bracket.ArenaSeason1 = Bracket_70_2_1,Bracket_70_2_2
 #                 ProgressionSystem.Bracket.ArenaSeason1.Enabled = 0
 #        Default: All season mappings are set to canonical brackets and Disabled by default.

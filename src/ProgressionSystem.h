@@ -51,4 +51,10 @@ std::array<std::string, PROGRESSION_BRACKET_MAX> const ProgressionBracketsNames 
     "Custom"
 };
 
+// Returns whether a bracket is effectively enabled.
+// A bracket is enabled if either:
+// - ProgressionSystem.Bracket_<name> = 1, OR
+// - It is included in any enabled ArenaSeason mapping (ProgressionSystem.Bracket.ArenaSeasonN.Enabled).
+bool IsProgressionBracketEnabled(std::string const& bracketName);
+
 #endif // _PROGRESSION_SYSTEM_H_

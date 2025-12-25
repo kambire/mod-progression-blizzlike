@@ -3,7 +3,7 @@
 -- Uncomment/Comment bosses based on phase progression
 
 -- Enable Naxxramas 80 version creatures
-UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 533 AND `id` IN (
+UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 533 AND `id1` IN (
     29122, -- Anub'Rekhan (Arachnid Quarter)
     29123, -- Grand Widow Faerlina
     29124, -- Maexxna
@@ -22,13 +22,13 @@ UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 533 AND `id` IN (
 
 -- Eye of Eternity (Obsidian Sanctum bonus boss)
 -- Enable Malygos encounter
-UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 616 AND `id` IN (
+UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 616 AND `id1` IN (
     28860,  -- Malygos
     27635   -- Alexstrasza the Life-Binder (Phase 3)
 );
 
 -- Obsidian Sanctum (Sartharion with Dragons)
-UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 615 AND `id` IN (
+UPDATE `creature` SET `phaseMask` = 1 WHERE `map` = 615 AND `id1` IN (
     25038,  -- Sartharion
     25040,  -- Tenebron
     25041,  -- Shadron

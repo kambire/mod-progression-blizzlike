@@ -53,9 +53,10 @@ public:
 
         for (std::string const& bracketName : ProgressionBracketsNames)
         {
-            bool const enabled = sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false);
+            bool const configEnabled = sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_" + bracketName, false);
+            bool const enabled = IsProgressionBracketEnabled(bracketName);
             enabledCount += enabled ? 1 : 0;
-            handler->PSendSysMessage("Bracket: {} (Enabled: {})", bracketName, enabled);
+            handler->PSendSysMessage("Bracket: {} (Config: {} Effective: {})", bracketName, configEnabled, enabled);
         }
 
         handler->PSendSysMessage("Enabled brackets: {}", enabledCount);

@@ -63,15 +63,6 @@ namespace
         { "ProgressionSystem.Arena.Season7.BracketRestriction", false },
         { "ProgressionSystem.Arena.Season8.BracketRestriction", false },
 
-        { "ProgressionSystem.Bracket.ArenaSeason1.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason2.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason3.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason4.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason5.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason6.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason7.Enabled", false },
-        { "ProgressionSystem.Bracket.ArenaSeason8.Enabled", false },
-
         { "ProgressionSystem.Vendor.BlockOutdatedInventory", false },
         { "ProgressionSystem.Vendor.AllowPreviousTierPurchase", true },
         { "ProgressionSystem.Vendor.RestrictPVPVendors", false },
@@ -86,14 +77,6 @@ namespace
 
     StringOption constexpr kUnsupportedStringOptions[] =
     {
-        { "ProgressionSystem.Bracket.ArenaSeason1", "Bracket_70_2_1,Bracket_70_2_2" },
-        { "ProgressionSystem.Bracket.ArenaSeason2", "Bracket_70_2_2,Bracket_70_3_2,Bracket_70_4_1" },
-        { "ProgressionSystem.Bracket.ArenaSeason3", "Bracket_70_5" },
-        { "ProgressionSystem.Bracket.ArenaSeason4", "Bracket_70_6_2" },
-        { "ProgressionSystem.Bracket.ArenaSeason5", "Bracket_80_1_2" },
-        { "ProgressionSystem.Bracket.ArenaSeason6", "Bracket_80_2" },
-        { "ProgressionSystem.Bracket.ArenaSeason7", "Bracket_80_3" },
-        { "ProgressionSystem.Bracket.ArenaSeason8", "Bracket_80_4_1" },
     };
 }
 
@@ -107,7 +90,7 @@ static void ProgressionSystemLogEffectiveConfig()
         "[mod-progression-blizzlike] Effective config: LoadScripts={} LoadDatabase={} ReapplyUpdates={}",
         loadScripts ? 1 : 0, loadDatabase ? 1 : 0, reapplyUpdates ? 1 : 0);
     LOG_INFO("server.server",
-        "[mod-progression-blizzlike] If these values do not match your expectations, ensure your config is copied to etc/modules/*.conf (e.g. etc/modules/progression_system.conf) and contains a [worldserver] section.");
+        "[mod-progression-blizzlike] If these values do not match your expectations, ensure your config is copied to etc/modules/*.conf (e.g. etc/modules/mod-progression-blizzlike.conf) and contains a [worldserver] section.");
 }
 
 static void ProgressionSystemWarnUnsupportedConfigOptions()

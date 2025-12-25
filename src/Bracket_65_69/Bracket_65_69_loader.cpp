@@ -6,6 +6,6 @@
 
 void AddBracket_65_69_Scripts()
 {
-    if (!(sConfigMgr->GetOption<bool>("ProgressionSystem.Bracket_65_69", false)))
+    if (!IsProgressionBracketEnabled("65_69"))
         return;
 }
