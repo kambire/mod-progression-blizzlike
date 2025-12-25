@@ -1,2 +1,5 @@
 -- Reset WotLK dungeon rewards
-UPDATE `lfg_dungeon_rewards` SET `firstQuestId` = 24790, `otherQuestId`=24791 WHERE `dungeonId`=261 AND `maxLevel`=80;
+-- Desired behavior:
+-- - First random heroic of the day: Valor (quest 24788)
+-- - Subsequent random heroics: Heroism (quest 24789)
+UPDATE `lfg_dungeon_rewards` SET `firstQuestId` = 24788, `otherQuestId`=24789 WHERE `dungeonId` IN (261, 262) AND `maxLevel`=80;
