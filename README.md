@@ -20,7 +20,7 @@ Modular progression system for AzerothCore built around **brackets** (Vanilla/TB
 - ✅ Bracket enable/disable flags via config (`ProgressionSystem.Bracket_*`)
 - ✅ Optional re-apply of bracket SQL updates on startup (`ProgressionSystem.ReapplyUpdates`)
 
-Note: Some config keys in `conf/progression_system.conf.dist` are placeholders (documented but not implemented in this module). If you set them away from defaults, the module will log warnings and ignore them.
+Note: Some config keys in `conf/mod-progression-blizzlike.conf.dist` are placeholders (documented but not implemented in this module). If you set them away from defaults, the module will log warnings and ignore them.
 
 ---
 
@@ -56,8 +56,7 @@ ProgressionSystem.Bracket_80_4_1 = 0           # Arena S8 disabled
 mod-progression-blizzlike/
 ├── CMakeLists.txt                         # AzerothCore module build integration
 ├── conf/
-│   ├── progression_system.conf.dist       # Main config
-│   ├── mod-progression-blizzlike.conf.dist # Alias config (same contents)
+│   └── mod-progression-blizzlike.conf.dist # Config template
 │   └── conf.sh.dist                       # Bash template
 ├── src/
 │   ├── ProgressionSystem.h                # C++ structure
@@ -88,11 +87,8 @@ git clone https://github.com/kambire/mod-progression-blizzlike.git
 ### 2. Configure brackets
 ```bash
 cd mod-progression-blizzlike/conf
-cp progression_system.conf.dist progression_system.conf
-# Edit progression_system.conf and enable desired brackets
-
-# (Optional) If you prefer the common AzerothCore naming convention:
-# cp mod-progression-blizzlike.conf.dist mod-progression-blizzlike.conf
+cp mod-progression-blizzlike.conf.dist mod-progression-blizzlike.conf
+# Edit mod-progression-blizzlike.conf and enable desired brackets
 ```
 
 ### 3. Build AzerothCore

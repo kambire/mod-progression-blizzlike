@@ -35,8 +35,8 @@ This will:
 - It must end up as: `azerothcore-wotlk/modules/mod-progression-blizzlike/`
 
 2) Config:
-- Copy `conf/progression_system.conf.dist` into your module config directory:
-  - Typical example: `azerothcore-wotlk/etc/modules/progression_system.conf`
+- Copy `conf/mod-progression-blizzlike.conf.dist` into your module config directory:
+  - Typical example: `azerothcore-wotlk/etc/modules/mod-progression-blizzlike.conf`
 - Edit it and enable **only** the desired brackets:
   - `ProgressionSystem.LoadDatabase = 1`
   - `ProgressionSystem.LoadScripts = 1`

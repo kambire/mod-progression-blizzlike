@@ -26,7 +26,7 @@ namespace
         char const* defaultValue;
     };
 
-    // Options present in progression_system.conf.dist but currently NOT implemented anywhere in this module.
+    // Options present in mod-progression-blizzlike.conf.dist but currently NOT implemented anywhere in this module.
     // We emit warnings only when their configured value differs from the documented default.
     BoolOption constexpr kUnsupportedBoolOptions[] =
     {

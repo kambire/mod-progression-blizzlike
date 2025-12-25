@@ -20,7 +20,7 @@ Check-Git
 git status --porcelain
 
 # Stage the config file
-git add "conf/progression_system.conf.dist"
+git add "conf/mod-progression-blizzlike.conf.dist"
 
 # Commit
 $commitCmd = "git commit -m '$Message'"

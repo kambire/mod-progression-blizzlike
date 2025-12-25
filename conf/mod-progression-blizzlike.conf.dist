@@ -1,6 +1,6 @@
 #
-# This file is provided to match common AzerothCore module config naming conventions.
-# It is functionally equivalent to conf/progression_system.conf.dist.
+# Single config template distributed with this module.
+# Copy it into your AzerothCore `etc/modules/` folder (you may rename it to any `.conf` name).
 #
 # Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 #

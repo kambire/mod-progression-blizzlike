@@ -353,7 +353,7 @@ for (const auto& bracket : ProgressionBracketsNames) {
 ### Initialization Sequence
 
 ```
-1. Config file loaded (progression_system.conf.dist)
+1. Config file loaded (mod-progression-blizzlike.conf.dist)
 2. Bracket array initialized (ProgressionSystem.h)
 3. GetDatabaseDirectories() called for each enabled bracket
 4. SQL files discovered in order:
