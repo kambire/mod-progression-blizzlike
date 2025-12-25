@@ -14,7 +14,14 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 (2, 724, 15, '', '', 'The Ruby Sanctum');
 
 -- Makes instances (and RDF) Onyxia's Lair, Trial of the Crusader and Trial of the Champion available again.
-DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (249, 649, 650);
+-- NOTE: Trial of the Champion (650) is intentionally kept locked.
+DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (249, 649);
+
+-- Keep Trial of the Champion locked completely (including RDF).
+DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 650;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(2, 650, 3, '', '', '[mod-progression-blizzlike] Locked: Trial of the Champion'),
+(8, 650, 3, '', '', '[mod-progression-blizzlike] Locked (RDF): Trial of the Champion');
 
 -- Make the quests  Lord Jaraxxus Must Die! and available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24589;
