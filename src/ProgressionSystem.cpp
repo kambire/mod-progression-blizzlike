@@ -4,6 +4,7 @@
 
 #include "ProgressionSystem.h"
 #include "DBUpdater.h"
+#include "Log.h"
 #include "Tokenize.h"
 #include "StringConvert.h"
 
@@ -111,41 +112,56 @@ inline std::string DetermineModuleBracketBasePath()
     return "modules/mod-progression-blizzlike/src/Bracket_";
 }
 
-inline std::vector<std::string> GetDatabaseDirectories(std::string const& folderName)
+template <typename TDatabase>
+static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string const& folderName);
+
+template <typename TDatabase>
+static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> const& directories, std::string const& folderName);
+
+template <typename TConnection, typename TDatabase>
+static void ApplyDbUpdatesInBracketOrder(TDatabase& db, uint32 updateFlags, std::string const& folderName)
 {
-    std::vector<std::string> directories;
+    if (!DBUpdater<TConnection>::IsEnabled(updateFlags))
+        return;
+
+    if (sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false))
+    {
+        DeleteModuleUpdatesForEnabledBrackets(db, folderName);
+    }
 
     namespace fs = std::filesystem;
 
-    // DBUpdater expects paths relative to the worldserver working directory.
-    // Using a relative path here avoids platform-specific absolute paths.
-    std::string const path = DetermineModuleBracketBasePath();
+    std::string const base = DetermineModuleBracketBasePath();
+
+    uint32 totalDirs = 0;
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
         if (!IsProgressionBracketEnabled(bracketName))
-        {
             continue;
-        }
 
-        std::string bracketPath = path + bracketName + "/sql/" + folderName;
-        fs::path const bracketDir = fs::path(bracketPath);
+        std::string const dir = base + bracketName + "/sql/" + folderName;
+        fs::path const bracketDir = fs::path(dir);
+
         if (!fs::exists(bracketDir) || !fs::is_directory(bracketDir))
         {
-            // Many brackets will not have sql/auth or sql/characters folders; that's OK.
-            // Warn only for missing world folders since those carry the bulk of progression changes.
             if (folderName == "world")
             {
                 LOG_WARN("server.server",
                     "[mod-progression-blizzlike] Enabled bracket '{}' but SQL directory not found: '{}' (cwd-sensitive)",
-                    bracketName, bracketPath);
+                    bracketName, dir);
             }
             continue;
         }
 
-        directories.push_back(std::move(bracketPath));
+        ++totalDirs;
+
+        // Apply strictly in bracket order: one DBUpdater call per bracket.
+        std::vector<std::string> dirs = { dir };
+        LogModulePendingSqlFiles(db, dirs, folderName);
+        DBUpdater<TConnection>::Update(db, &dirs);
     }
 
-    if (directories.empty())
+    if (totalDirs == 0)
     {
         LOG_INFO("server.server",
             "[mod-progression-blizzlike] DBUpdater will scan 0 '{}' directories (this can be normal).",
@@ -154,11 +170,9 @@ inline std::vector<std::string> GetDatabaseDirectories(std::string const& folder
     else
     {
         LOG_INFO("server.server",
-            "[mod-progression-blizzlike] DBUpdater will scan {} '{}' directories.",
-            directories.size(), folderName);
+            "[mod-progression-blizzlike] DBUpdater applied '{}' updates for {} bracket directories in order.",
+            folderName, totalDirs);
     }
-
-    return directories;
 }
 
 template <typename TDatabase>
@@ -265,50 +279,9 @@ public:
     {
         LOG_INFO("server.server", "Loading mod-progression-blizzlike updates...");
 
-        if (DBUpdater<LoginDatabaseConnection>::IsEnabled(updateFlags))
-        {
-            if (sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false))
-            {
-                DeleteModuleUpdatesForEnabledBrackets(LoginDatabase, "auth");
-            }
-
-            std::vector<std::string> loginDatabaseDirectories = GetDatabaseDirectories("auth");
-            if (!loginDatabaseDirectories.empty())
-            {
-                LogModulePendingSqlFiles(LoginDatabase, loginDatabaseDirectories, "auth");
-                DBUpdater<LoginDatabaseConnection>::Update(LoginDatabase, &loginDatabaseDirectories);
-            }
-        }
-
-        if (DBUpdater<CharacterDatabaseConnection>::IsEnabled(updateFlags))
-        {
-            if (sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false))
-            {
-                DeleteModuleUpdatesForEnabledBrackets(CharacterDatabase, "characters");
-            }
-
-            std::vector<std::string> charactersDatabaseDirectories = GetDatabaseDirectories("characters");
-            if (!charactersDatabaseDirectories.empty())
-            {
-                LogModulePendingSqlFiles(CharacterDatabase, charactersDatabaseDirectories, "characters");
-                DBUpdater<CharacterDatabaseConnection>::Update(CharacterDatabase, &charactersDatabaseDirectories);
-            }
-        }
-
-        if (DBUpdater<WorldDatabaseConnection>::IsEnabled(updateFlags))
-        {
-            if (sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false))
-            {
-                DeleteModuleUpdatesForEnabledBrackets(WorldDatabase, "world");
-            }
-
-            std::vector<std::string> worldDatabaseDirectories = GetDatabaseDirectories("world");
-            if (!worldDatabaseDirectories.empty())
-            {
-                LogModulePendingSqlFiles(WorldDatabase, worldDatabaseDirectories, "world");
-                DBUpdater<WorldDatabaseConnection>::Update(WorldDatabase, &worldDatabaseDirectories);
-            }
-        }
+        ApplyDbUpdatesInBracketOrder<LoginDatabaseConnection>(LoginDatabase, updateFlags, "auth");
+        ApplyDbUpdatesInBracketOrder<CharacterDatabaseConnection>(CharacterDatabase, updateFlags, "characters");
+        ApplyDbUpdatesInBracketOrder<WorldDatabaseConnection>(WorldDatabase, updateFlags, "world");
 
         // Remove disabled attunements
         std::string disabledAttunements = sConfigMgr->GetOption<std::string>("ProgressionSystem.DisabledAttunements", "");

@@ -17,6 +17,12 @@ This module is designed for production use under these rules:
 3) Choose the target bracket:
 - Decide which `ProgressionSystem.Bracket_*` you will enable in production.
 
+Important note about instance locks (WotLK):
+- This module historically relied on early "baseline" brackets (notably `Bracket_0`) to INSERT rows into `disables` for future content.
+- For WotLK progression specifically, the first WotLK bracket is `Bracket_71_74` and it is the right place to enforce the baseline lock for ICC/ToC/RS/Onyxia80.
+- If your server jumps straight to a later WotLK bracket (e.g. enabling only `Bracket_80_2`), you must ensure the bracket SQL enforces the lock FIRST (INSERT into `disables`) before it unlocks the intended content (DELETE from `disables`).
+- Otherwise, ICC/ToC/Ruby Sanctum may be accessible simply because your world DB never had those `disables` rows inserted.
+
 ## 1) Validate and build a release (on your PC)
 
 Run packaging/validation from the repo root:
