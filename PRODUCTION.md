@@ -18,10 +18,9 @@ This module is designed for production use under these rules:
 - Decide which `ProgressionSystem.Bracket_*` you will enable in production.
 
 Important note about instance locks (WotLK):
-- This module historically relied on early "baseline" brackets (notably `Bracket_0`) to INSERT rows into `disables` for future content.
-- For WotLK progression specifically, the first WotLK bracket is `Bracket_71_74` and it is the right place to enforce the baseline lock for ICC/ToC/RS/Onyxia80.
-- If your server jumps straight to a later WotLK bracket (e.g. enabling only `Bracket_80_2`), you must ensure the bracket SQL enforces the lock FIRST (INSERT into `disables`) before it unlocks the intended content (DELETE from `disables`).
-- Otherwise, ICC/ToC/Ruby Sanctum may be accessible simply because your world DB never had those `disables` rows inserted.
+- This module enforces WotLK "deny-by-default" via `world.disables`: it INSERTs baseline locks for future content and later brackets DELETE those rows to unlock content.
+- The first WotLK bracket in this module is `Bracket_71_74`, but baseline locks are also inserted in `Bracket_75_79` and all `Bracket_80_*` disables scripts to support setups that start WotLK later or skip brackets.
+- If your server jumps straight to a later WotLK bracket (e.g., enabling only `Bracket_75_79` or `Bracket_80_2`), you still get the baseline lock before unlocks run.
 
 Terminology note: "blocked" means the instance is disabled (access denied) via `world.disables`.
 This does NOT delete maps, creatures, loot, or scripts from your database; the portals still exist.

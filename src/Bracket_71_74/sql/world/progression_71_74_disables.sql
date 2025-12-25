@@ -1,7 +1,10 @@
 -- 71-74 level range - Utgarde Keep, The Nexus, Drak’Tharon Keep, Azjol-Nerub, Ahn’kahet: The Old Kingdom
 
 -- IMPORTANT (WotLK baseline lock):
--- This is the first WotLK bracket. We must ensure future 80 content is locked from the start of Northrend.
+-- This module's first WotLK bracket is 71_74.
+-- However, some progression setups choose to "start WotLK" later (e.g. enabling 75_79 first).
+-- For that reason, the same baseline lock is also inserted in later WotLK brackets (75_79 and 80_*).
+-- We must ensure future 80 content is locked from the start of Northrend.
 -- Some servers/world DBs do not have baseline `disables` rows inserted for ICC/ToC/RS/Onyxia80.
 -- If these rows do not exist, the instances can be accessible earlier than intended.
 --
