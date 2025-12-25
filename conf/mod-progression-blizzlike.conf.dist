@@ -35,6 +35,25 @@ ProgressionSystem.LoadDatabase = 1
 ProgressionSystem.ReapplyUpdates = 0
 
 #
+#    ProgressionSystem.Debug.LogPendingSql
+#        Description: Logs (best-effort) which bracket SQL files are pending and will be executed by DBUpdater.
+#                     This reads the `updates` table and compares it to the SQL files present under enabled brackets.
+#                     Recommended for troubleshooting only (can be verbose).
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+
+ProgressionSystem.Debug.LogPendingSql = 0
+
+#
+#    ProgressionSystem.Debug.MaxSqlLogLines
+#        Description: Maximum number of SQL filenames to print per database (world/characters/auth).
+#        Default:     200
+#
+
+ProgressionSystem.Debug.MaxSqlLogLines = 200
+
+#
 #    ProgressionSystem.Bracket_X
 #        Description: Defines if the bracket should be loaded being 0 not loaded, 1 loaded.
 #        Default:     0 - Not loaded.

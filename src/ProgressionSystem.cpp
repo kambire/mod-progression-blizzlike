@@ -8,6 +8,7 @@
 #include "StringConvert.h"
 
 #include <filesystem>
+#include <unordered_set>
 
 inline std::string DetermineModuleBracketBasePath()
 {
@@ -114,6 +115,79 @@ static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string con
     }
 }
 
+template <typename TDatabase>
+static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> const& directories, std::string const& folderName)
+{
+    bool const enabled = sConfigMgr->GetOption<bool>("ProgressionSystem.Debug.LogPendingSql", false);
+    if (!enabled)
+        return;
+
+    uint32 const maxLines = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.MaxSqlLogLines", 200)));
+    bool const reapply = sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false);
+
+    namespace fs = std::filesystem;
+
+    // Collect already-applied update names for these directories (best-effort).
+    std::unordered_set<std::string> applied;
+    applied.reserve(4096);
+
+    for (std::string const& dir : directories)
+    {
+        auto result = db.Query("SELECT name FROM updates WHERE name LIKE '{}'", dir + "/%");
+        if (!result)
+            continue;
+
+        do
+        {
+            applied.insert((*result)[0].Get<std::string>());
+        } while (result->NextRow());
+    }
+
+    uint32 printed = 0;
+    uint32 totalPending = 0;
+    uint32 totalFiles = 0;
+
+    for (std::string const& dir : directories)
+    {
+        fs::path const p(dir);
+        if (!fs::exists(p) || !fs::is_directory(p))
+            continue;
+
+        for (fs::directory_iterator it(p); it != fs::directory_iterator(); ++it)
+        {
+            if (!it->is_regular_file())
+                continue;
+            if (it->path().extension() != ".sql")
+                continue;
+
+            ++totalFiles;
+
+            std::string const updateName = dir + "/" + it->path().filename().string();
+            bool const isApplied = (applied.find(updateName) != applied.end());
+            bool const shouldPrint = reapply ? true : !isApplied;
+
+            if (!isApplied)
+                ++totalPending;
+
+            if (!shouldPrint)
+                continue;
+
+            if (printed < maxLines)
+            {
+                LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL {}: {}",
+                    folderName,
+                    reapply ? "(reapply)" : "(pending)",
+                    updateName);
+                ++printed;
+            }
+        }
+    }
+
+    LOG_INFO("server.server",
+        "[mod-progression-blizzlike] SQL summary for '{}': files_found={} pending_estimated={} printed={} max={} reapply={}",
+        folderName, totalFiles, totalPending, printed, maxLines, reapply ? 1 : 0);
+}
+
 class ProgressionSystemLoadingDBUpdates : public DatabaseScript
 {
 public:
@@ -133,6 +207,7 @@ public:
             std::vector<std::string> loginDatabaseDirectories = GetDatabaseDirectories("auth");
             if (!loginDatabaseDirectories.empty())
             {
+                LogModulePendingSqlFiles(LoginDatabase, loginDatabaseDirectories, "auth");
                 DBUpdater<LoginDatabaseConnection>::Update(LoginDatabase, &loginDatabaseDirectories);
             }
         }
@@ -147,6 +222,7 @@ public:
             std::vector<std::string> charactersDatabaseDirectories = GetDatabaseDirectories("characters");
             if (!charactersDatabaseDirectories.empty())
             {
+                LogModulePendingSqlFiles(CharacterDatabase, charactersDatabaseDirectories, "characters");
                 DBUpdater<CharacterDatabaseConnection>::Update(CharacterDatabase, &charactersDatabaseDirectories);
             }
         }
@@ -161,6 +237,7 @@ public:
             std::vector<std::string> worldDatabaseDirectories = GetDatabaseDirectories("world");
             if (!worldDatabaseDirectories.empty())
             {
+                LogModulePendingSqlFiles(WorldDatabase, worldDatabaseDirectories, "world");
                 DBUpdater<WorldDatabaseConnection>::Update(WorldDatabase, &worldDatabaseDirectories);
             }
         }
