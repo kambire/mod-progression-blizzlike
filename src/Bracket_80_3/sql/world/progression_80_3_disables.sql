@@ -13,9 +13,10 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 (2, 668, 3, '', '', 'Halls of Reflection'),
 (2, 724, 15, '', '', 'The Ruby Sanctum');
 
--- Makes instances (and RDF) Onyxia's Lair, Trial of the Crusader and Trial of the Champion available again.
+-- Makes instances (and RDF) Trial of the Crusader available again.
+-- NOTE: Onyxia (249) is intentionally kept locked until Bracket_80_4.
 -- NOTE: Trial of the Champion (650) is intentionally kept locked.
-DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (249, 649);
+DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (649);
 
 -- Keep Trial of the Champion locked completely (including RDF).
 DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 650;

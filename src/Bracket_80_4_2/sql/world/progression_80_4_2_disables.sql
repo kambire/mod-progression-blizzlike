@@ -16,6 +16,9 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 -- Makes instance (and RDF) Ruby Sanctum available again.
 DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 724;
 
+-- Unlock Onyxia (80) starting in Bracket_80_4.
+DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 249;
+
 -- Make the quest Assault on the Sanctum available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
 
