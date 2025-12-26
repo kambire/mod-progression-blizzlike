@@ -1,5 +1,7 @@
 -- WotLK emblem distribution fix (Bracket 80_3 / ToC era)
--- Desired behavior (per report): Triumph must start in 80_3 (not 80_2).
+-- Desired behavior (blizzlike 3.2 / ToC era):
+-- - Heroic 5-man dungeon BOSSES: Emblem of Conquest (45624)
+-- NOTE: This file focuses on heroic 5-man bosses; higher-tier emblem sources are handled elsewhere.
 --
 -- Emblem item IDs (WotLK):
 -- Heroism 40752
@@ -8,12 +10,12 @@
 -- Triumph 47241
 
 -- =====================================================
--- 1) HEROIC 5-MAN DUNGEON BOSSES => TRIUMPH (47241)
+-- 1) HEROIC 5-MAN DUNGEON BOSSES => CONQUEST (45624)
 -- =====================================================
 UPDATE `creature_loot_template` cl
 JOIN `creature_template` ct ON ct.`entry` = cl.`entry`
-SET cl.`Item` = 47241
-WHERE cl.`Item` IN (40752, 40753, 45624)
+SET cl.`Item` = 45624
+WHERE cl.`Item` IN (40752, 40753, 47241)
   AND ct.`rank` = 3
   AND EXISTS (
     SELECT 1
@@ -26,8 +28,8 @@ WHERE cl.`Item` IN (40752, 40753, 45624)
 UPDATE `reference_loot_template` rl
 JOIN `creature_loot_template` cl ON cl.`Reference` = rl.`Entry`
 JOIN `creature_template` ct ON ct.`entry` = cl.`entry`
-SET rl.`Item` = 47241
-WHERE rl.`Item` IN (40752, 40753, 45624)
+SET rl.`Item` = 45624
+WHERE rl.`Item` IN (40752, 40753, 47241)
   AND ct.`rank` = 3
   AND EXISTS (
     SELECT 1
