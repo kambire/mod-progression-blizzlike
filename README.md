@@ -474,8 +474,8 @@ WHERE entry = [VENDOR_ID] AND item = [ITEM_ID];
 ## 📚 Additional Documentation
 
 - **BRACKET_DESCRIPTIONS_COMPLETE.md** - Detailed description of each of the 38 brackets
-- **ARENA_SEASONS_VALIDATION.md** - Complete mapping of 8 Arena Seasons
-- **PARAMETROS_TECNICOS_DESARROLLO.md** - Technical parameters and SQL validations
+- **audit/ARENA_SEASONS_VALIDATION.md** - Complete mapping of 8 Arena Seasons
+- **audit/PARAMETROS_TECNICOS_DESARROLLO.md** - Technical parameters and SQL validations
 
 ---
 
@@ -498,7 +498,7 @@ This project is licensed under AGPL v3. See the [LICENSE](LICENSE) file for more
 ## 💬 Support
 
 - **AzerothCore Discord**: [Join the server](https://discord.gg/azerothcore)
-- **Documentation**: Check the .md files in the project root
+- **Documentation**: Check the `.md` files in the project root and `audit/`
 - **Issues**: Report problems via GitHub Issues
 
 ---

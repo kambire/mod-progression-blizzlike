@@ -274,9 +274,9 @@ cp src/Bracket_*/sql/templates/*.sql.template ~/path/to/updates/
 ## 🎯 Important Files
 
 - **README.md** - Full documentation
-- **PARAMETROS_TECNICOS_DESARROLLO.md** - Technical configuration
+- **audit/PARAMETROS_TECNICOS_DESARROLLO.md** - Technical configuration
 - **BRACKET_DESCRIPTIONS_COMPLETE.md** - Bracket descriptions
-- **ARENA_SEASONS_VALIDATION.md** - Season mapping
+- **audit/ARENA_SEASONS_VALIDATION.md** - Season mapping
 
 ---
 
