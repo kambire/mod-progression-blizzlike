@@ -20,9 +20,8 @@ WHERE cl.`Item` IN (40752, 40753, 45624)
   AND EXISTS (
     SELECT 1
     FROM `creature` cr
-    JOIN `instance_template` it ON it.`map` = cr.`map`
-    WHERE cr.`id1` = cl.`entry`
-      AND it.`maxPlayers` = 5
+    WHERE cr.`map` IN (574,575,576,578,595,599,600,601,602,604,608,619,632,658,668)
+      AND cr.`id1` = cl.`entry`
   );
 
 UPDATE `reference_loot_template` rl
@@ -34,7 +33,6 @@ WHERE rl.`Item` IN (40752, 40753, 45624)
   AND EXISTS (
     SELECT 1
     FROM `creature` cr
-    JOIN `instance_template` it ON it.`map` = cr.`map`
-    WHERE cr.`id1` = cl.`entry`
-      AND it.`maxPlayers` = 5
+    WHERE cr.`map` IN (574,575,576,578,595,599,600,601,602,604,608,619,632,658,668)
+      AND cr.`id1` = cl.`entry`
   );
