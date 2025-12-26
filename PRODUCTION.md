@@ -76,7 +76,7 @@ Recommended steps:
 
 ## 4) Post-deploy verification
 
-- Run `SQL_VERIFICATION.sql` against your `world` database.
+- Run `audit/SQL_VERIFICATION.sql` against your `world` database.
 - In particular:
   - `Arena Vendors - GOLD PRICED (ExtendedCost=0)` should return **0**.
 
