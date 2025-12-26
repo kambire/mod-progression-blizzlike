@@ -22,6 +22,11 @@ DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` = 249;
 -- Make the quests Inside the Frozen Citadel available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (24506, 24510);
 
+-- Ruby Sanctum: deny-by-default until Bracket_80_4_2.
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(1, 26013, 0, '', '', 'Assault on the Sanctum');
+
 -- Unlock Archmage Lan'dalock quest
 -- https://www.wowhead.com/wotlk/quest=24582/instructor-razuvious-must-die
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 24582;

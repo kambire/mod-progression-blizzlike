@@ -55,6 +55,11 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 (1, 24506, 0, '', '', "Inside the Frozen Citadel (Horde)"),
 (1, 24510, 0, '', '', "Inside the Frozen Citadel (Alliance)");
 
+-- Ruby Sanctum: deny-by-default until Bracket_80_4_2.
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(1, 26013, 0, '', '', 'Assault on the Sanctum');
+
 -- Argent Tournament: should NOT be available at the start of WotLK.
 -- We block all known AT quest IDs here (deny-by-default). Bracket_80_3 will unlock them.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` IN (

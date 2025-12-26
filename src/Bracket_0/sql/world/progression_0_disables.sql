@@ -132,3 +132,8 @@ INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, 
 (2, 658, 3, "", "", "Pit of Saron"),
 (2, 668, 3, "", "", "Halls of Reflection"),
 (2, 724, 15, "", "", "The Ruby Sanctum");
+
+-- Ruby Sanctum: deny-by-default until Bracket_80_4_2.
+DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
+INSERT INTO `disables` (`sourceType`, `entry`, `flags`, `params_0`, `params_1`, `comment`) VALUES
+(1, 26013, 0, '', '', 'Assault on the Sanctum');
