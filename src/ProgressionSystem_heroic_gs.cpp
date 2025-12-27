@@ -28,55 +28,96 @@ namespace
         std::unordered_map<std::string, uint32> requiredByBracket;
     };
 
-    DbHeroicGsConfig const& GetDbHeroicGsConfig()
+    DbHeroicGsConfig LoadDbHeroicGsConfig()
     {
-        static DbHeroicGsConfig cfg;
-        static std::once_flag once;
+        DbHeroicGsConfig cfg;
 
-        std::call_once(once, []()
+        // Probe for table existence without emitting SQL errors.
+        QueryResult probe = WorldDatabase.Query("SHOW TABLES LIKE 'mod_progression_heroic_gs'");
+        if (!probe)
         {
-            // Probe for table existence without emitting SQL errors.
-            QueryResult probe = WorldDatabase.Query("SHOW TABLES LIKE 'mod_progression_heroic_gs'");
-            if (!probe)
+            cfg.tablePresent = false;
+            return cfg;
+        }
+
+        cfg.tablePresent = true;
+
+        QueryResult result = WorldDatabase.Query(
+            "SELECT bracket, enabled, avg_ilvl_multiplier, required_heroic, required_icc5_normal, required_icc5_heroic "
+            "FROM mod_progression_heroic_gs");
+
+        if (!result)
+            return cfg;
+
+        do
+        {
+            Field* fields = result->Fetch();
+            std::string const bracket = fields[0].Get<std::string>();
+            bool const enabled = fields[1].Get<uint8>() != 0;
+            float const mult = fields[2].Get<float>();
+            uint32 const requiredHeroic = fields[3].Get<uint32>();
+            uint32 const reqIcc5Normal = fields[4].Get<uint32>();
+            uint32 const reqIcc5Heroic = fields[5].Get<uint32>();
+
+            if (bracket == "GLOBAL")
             {
-                cfg.tablePresent = false;
-                return;
+                cfg.enabled = enabled;
+                cfg.avgIlvlMultiplier = mult;
+                cfg.requiredIcc5Normal = reqIcc5Normal;
+                cfg.requiredIcc5Heroic = reqIcc5Heroic;
             }
-
-            cfg.tablePresent = true;
-
-            QueryResult result = WorldDatabase.Query(
-                "SELECT bracket, enabled, avg_ilvl_multiplier, required_heroic, required_icc5_normal, required_icc5_heroic "
-                "FROM mod_progression_heroic_gs");
-
-            if (!result)
-                return;
-
-            do
+            else
             {
-                Field* fields = result->Fetch();
-                std::string const bracket = fields[0].Get<std::string>();
-                bool const enabled = fields[1].Get<uint8>() != 0;
-                float const mult = fields[2].Get<float>();
-                uint32 const requiredHeroic = fields[3].Get<uint32>();
-                uint32 const reqIcc5Normal = fields[4].Get<uint32>();
-                uint32 const reqIcc5Heroic = fields[5].Get<uint32>();
-
-                if (bracket == "GLOBAL")
-                {
-                    cfg.enabled = enabled;
-                    cfg.avgIlvlMultiplier = mult;
-                    cfg.requiredIcc5Normal = reqIcc5Normal;
-                    cfg.requiredIcc5Heroic = reqIcc5Heroic;
-                }
-                else
-                {
-                    cfg.requiredByBracket[bracket] = requiredHeroic;
-                }
-            } while (result->NextRow());
-        });
+                cfg.requiredByBracket[bracket] = requiredHeroic;
+            }
+        } while (result->NextRow());
 
         return cfg;
+    }
+
+    std::mutex& GetDbHeroicGsConfigMutex()
+    {
+        static std::mutex m;
+        return m;
+    }
+
+    DbHeroicGsConfig& GetDbHeroicGsConfigStorage()
+    {
+        static DbHeroicGsConfig cfg;
+        return cfg;
+    }
+
+    bool& GetDbHeroicGsConfigLoaded()
+    {
+        static bool loaded = false;
+        return loaded;
+    }
+
+    DbHeroicGsConfig GetDbHeroicGsConfigSnapshot()
+    {
+        std::lock_guard<std::mutex> lock(GetDbHeroicGsConfigMutex());
+        DbHeroicGsConfig& cfg = GetDbHeroicGsConfigStorage();
+        bool& loaded = GetDbHeroicGsConfigLoaded();
+
+        if (!loaded)
+        {
+            cfg = LoadDbHeroicGsConfig();
+            loaded = true;
+        }
+
+        return cfg;
+    }
+
+    bool ReloadDbHeroicGsConfig()
+    {
+        std::lock_guard<std::mutex> lock(GetDbHeroicGsConfigMutex());
+        DbHeroicGsConfig& cfg = GetDbHeroicGsConfigStorage();
+        bool& loaded = GetDbHeroicGsConfigLoaded();
+
+        cfg = LoadDbHeroicGsConfig();
+        loaded = true;
+
+        return cfg.tablePresent;
     }
 
     bool IsHeroicGsGateEnabled()
@@ -85,14 +126,14 @@ namespace
         if (enabledByConf)
             return true;
 
-        DbHeroicGsConfig const& dbCfg = GetDbHeroicGsConfig();
+        DbHeroicGsConfig const dbCfg = GetDbHeroicGsConfigSnapshot();
         return dbCfg.tablePresent && dbCfg.enabled;
     }
 
     float GetAvgIlvlMultiplier()
     {
         float const multByConf = sConfigMgr->GetOption<float>("ProgressionSystem.HeroicGs.AvgIlvlMultiplier", 20.0f);
-        DbHeroicGsConfig const& dbCfg = GetDbHeroicGsConfig();
+        DbHeroicGsConfig const dbCfg = GetDbHeroicGsConfigSnapshot();
         if (dbCfg.tablePresent && dbCfg.avgIlvlMultiplier > 0.0f)
             return dbCfg.avgIlvlMultiplier;
         return multByConf;
@@ -156,7 +197,7 @@ namespace
 
     uint32 GetRequiredGsForCurrentBracket(uint32 mapId, Difficulty difficulty)
     {
-        DbHeroicGsConfig const& dbCfg = GetDbHeroicGsConfig();
+        DbHeroicGsConfig const dbCfg = GetDbHeroicGsConfigSnapshot();
 
         // Instance-specific overrides for ICC 5-mans.
         if (IsIcc5Map(mapId))
@@ -261,6 +302,11 @@ namespace
         }
     };
 } // namespace
+
+bool ProgressionSystemReloadHeroicGsFromDb()
+{
+    return ReloadDbHeroicGsConfig();
+}
 
 void AddProgressionSystemScripts();
 

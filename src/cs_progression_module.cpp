@@ -27,17 +27,49 @@ public:
 
     ChatCommandTable GetCommands() const override
     {
-        static ChatCommandTable progressionTable =
+        static ChatCommandTable reloadTable =
         {
+            { "heroicgs", HandleProgReloadHeroicGsCommand, SEC_ADMINISTRATOR, Console::Yes }
+        };
+
+        static ChatCommandTable proTable =
+        {
+            { "help", HandleProgHelpCommand, SEC_MODERATOR, Console::Yes },
             { "info", HandleProgModuleInfoCommand, SEC_MODERATOR, Console::Yes }
+            ,{ "reload", reloadTable }
         };
 
         static ChatCommandTable commandTable =
         {
-            { "progression", progressionTable },
+            // Short alias requested for in-game usage.
+            { "pro", proTable },
+            // Backward-compatible name.
+            { "progression", proTable },
         };
 
         return commandTable;
+    }
+
+    static bool HandleProgHelpCommand(ChatHandler* handler)
+    {
+        handler->SendSysMessage("Progression Module Commands");
+        handler->SendSysMessage(".pro help");
+        handler->SendSysMessage(".pro info");
+        handler->SendSysMessage(".pro reload heroicgs");
+        return true;
+    }
+
+    static bool HandleProgReloadHeroicGsCommand(ChatHandler* handler)
+    {
+        bool const tablePresent = ProgressionSystemReloadHeroicGsFromDb();
+        if (!tablePresent)
+        {
+            handler->SendSysMessage("HeroicGs: table 'mod_progression_heroic_gs' not found (DB config disabled). Using .conf fallback.");
+            return true;
+        }
+
+        handler->SendSysMessage("HeroicGs: reloaded DB config from 'mod_progression_heroic_gs'.");
+        return true;
     }
 
     static bool HandleProgModuleInfoCommand(ChatHandler* handler)

@@ -58,4 +58,8 @@ std::array<std::string, PROGRESSION_BRACKET_MAX> const ProgressionBracketsNames 
 // - It is included in any enabled ArenaSeason mapping (ProgressionSystem.Bracket.ArenaSeasonN.Enabled).
 bool IsProgressionBracketEnabled(std::string const& bracketName);
 
+// Reloads the optional DB-backed HeroicGs configuration (mod_progression_heroic_gs).
+// Returns true if the table is present; false if missing.
+bool ProgressionSystemReloadHeroicGsFromDb();
+
 #endif // _PROGRESSION_SYSTEM_H_
