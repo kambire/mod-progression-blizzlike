@@ -83,6 +83,13 @@ inline std::string DetermineModuleBracketBasePath()
 {
     namespace fs = std::filesystem;
 
+    auto Normalize = [](fs::path const& p)
+    {
+        // Use forward slashes for consistency across platforms and to avoid mixing separators
+        // when composing update names.
+        return p.generic_string();
+    };
+
     // Worldserver's working directory differs depending on how it is launched (Windows service,
     // IDE, acore.sh, etc). Probe a few common relative locations.
     std::array<std::string, 5> const candidates =
@@ -101,8 +108,23 @@ inline std::string DetermineModuleBracketBasePath()
         fs::path const probe = fs::path(base + "0");
         if (fs::exists(probe) && fs::is_directory(probe))
         {
-            LOG_INFO("server.server", "[mod-progression-blizzlike] Using bracket SQL base path: '{}'", base);
-            return base;
+            // Important: DBUpdater records the directory prefix into `updates.name`.
+            // If worldserver is launched with a different working directory, a relative prefix like
+            // "../modules/..." can change across runs and make already-applied SQL look "new".
+            // Resolve to a stable absolute path to keep `updates.name` consistent.
+            fs::path canonicalProbe;
+            try
+            {
+                canonicalProbe = fs::canonical(probe);
+            }
+            catch (...)
+            {
+                canonicalProbe = fs::absolute(probe);
+            }
+
+            std::string const stableBase = Normalize(canonicalProbe.parent_path()) + "/Bracket_";
+            LOG_INFO("server.server", "[mod-progression-blizzlike] Using bracket SQL base path: '{}'", stableBase);
+            return stableBase;
         }
     }
 
