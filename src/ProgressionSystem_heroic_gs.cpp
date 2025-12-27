@@ -293,9 +293,11 @@ namespace
             if (pseudoGs >= requiredGs)
                 return;
 
+            float const mult = GetAvgIlvlMultiplier();
+
             ChatHandler(player->GetSession()).PSendSysMessage(
-                "Necesitas GS %u (aprox, basado en iLvl promedio) para entrar aqui. Tu GS actual: %u (iLvl %.1f).",
-                requiredGs, pseudoGs, avgIlvl);
+                "Necesitas un requisito de equipo minimo para entrar aqui. Requisito: %u (iLvlProm*%.2f). Tu iLvl promedio: %.1f (valor: %u).",
+                requiredGs, mult, avgIlvl, pseudoGs);
 
             // Best-effort safe exit. (Core provides this on AzerothCore/Trinity-derived codebases.)
             player->TeleportToHomebind();
