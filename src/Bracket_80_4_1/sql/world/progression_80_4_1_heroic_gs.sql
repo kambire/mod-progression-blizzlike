@@ -1,5 +1,5 @@
--- ProgressionSystem - Heroic pseudo-GS gate (Bracket 80_4_1)
--- Required (pseudoGS): 4800  (approx iLvl 240 with x20)
+-- ProgressionSystem - Heroic avg item level gate (Bracket 80_4_1)
+-- Required (avg iLvl): 240
 
 CREATE TABLE IF NOT EXISTS `mod_progression_heroic_gs` (
   `bracket` VARCHAR(32) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `mod_progression_heroic_gs` (
 INSERT INTO `mod_progression_heroic_gs`
   (`bracket`, `enabled`, `avg_ilvl_multiplier`, `required_icc5_normal`, `required_icc5_heroic`)
 VALUES
-  ('GLOBAL', 1, 20.0, 5000, 5400)
+  ('GLOBAL', 1, 1.0, 250, 270)
 ON DUPLICATE KEY UPDATE
   `enabled` = VALUES(`enabled`),
   `avg_ilvl_multiplier` = VALUES(`avg_ilvl_multiplier`),
@@ -26,6 +26,6 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO `mod_progression_heroic_gs`
   (`bracket`, `required_heroic`)
 VALUES
-  ('80_4_1', 4800)
+  ('80_4_1', 240)
 ON DUPLICATE KEY UPDATE
   `required_heroic` = VALUES(`required_heroic`);

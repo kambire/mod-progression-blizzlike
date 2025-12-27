@@ -50,21 +50,21 @@ ProgressionSystem.ReapplyUpdates = 0
 #
 
 ProgressionSystem.HeroicGs.Enabled = 0
-ProgressionSystem.HeroicGs.AvgIlvlMultiplier = 20.0
+ProgressionSystem.HeroicGs.AvgIlvlMultiplier = 1.0
 
-# WotLK Heroic bracket thresholds (pseudoGS)
-ProgressionSystem.HeroicGs.Required_80_1_2 = 3500
-ProgressionSystem.HeroicGs.Required_80_2_1 = 3500
-ProgressionSystem.HeroicGs.Required_80_2_2 = 4000
+# WotLK Heroic bracket thresholds (avg equipped iLvl)
+ProgressionSystem.HeroicGs.Required_80_1_2 = 175
+ProgressionSystem.HeroicGs.Required_80_2_1 = 175
+ProgressionSystem.HeroicGs.Required_80_2_2 = 200
 # Legacy alias (pre-split). Used as fallback for 80_2_2.
-ProgressionSystem.HeroicGs.Required_80_2   = 4000
-ProgressionSystem.HeroicGs.Required_80_3   = 4400
-ProgressionSystem.HeroicGs.Required_80_4_1 = 4800
-ProgressionSystem.HeroicGs.Required_80_4_2 = 4800
+ProgressionSystem.HeroicGs.Required_80_2   = 200
+ProgressionSystem.HeroicGs.Required_80_3   = 220
+ProgressionSystem.HeroicGs.Required_80_4_1 = 240
+ProgressionSystem.HeroicGs.Required_80_4_2 = 240
 
 # ICC 5-man dungeons (Forge of Souls / Pit of Saron / Halls of Reflection)
-ProgressionSystem.HeroicGs.Required_Icc5_Normal = 5000
-ProgressionSystem.HeroicGs.Required_Icc5_Heroic = 5400
+ProgressionSystem.HeroicGs.Required_Icc5_Normal = 250
+ProgressionSystem.HeroicGs.Required_Icc5_Heroic = 270
 
 #
 #    ProgressionSystem.Bracket_X

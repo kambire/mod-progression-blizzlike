@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `mod_progression_heroic_gs` (
 INSERT INTO `mod_progression_heroic_gs`
   (`bracket`, `enabled`, `avg_ilvl_multiplier`, `required_icc5_normal`, `required_icc5_heroic`)
 VALUES
-  ('GLOBAL', 1, 20.0, 5000, 5400)
+  ('GLOBAL', 1, 1.0, 250, 270)
 ON DUPLICATE KEY UPDATE
   `enabled` = VALUES(`enabled`),
   `avg_ilvl_multiplier` = VALUES(`avg_ilvl_multiplier`),
@@ -30,9 +30,10 @@ ON DUPLICATE KEY UPDATE
   `required_icc5_heroic` = VALUES(`required_icc5_heroic`);
 
 -- Bracket-specific heroic requirement.
+-- Required (avg iLvl): 200
 INSERT INTO `mod_progression_heroic_gs`
   (`bracket`, `required_heroic`)
 VALUES
-  ('80_2_2', 4000)
+  ('80_2_2', 200)
 ON DUPLICATE KEY UPDATE
   `required_heroic` = VALUES(`required_heroic`);
