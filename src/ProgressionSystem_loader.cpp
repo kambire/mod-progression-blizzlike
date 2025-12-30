@@ -5,6 +5,8 @@
 #include "Config.h"
 #include "Define.h"
 #include "Log.h"
+#include "ProgressionSystem.h"
+#include "Tokenize.h"
 
 namespace
 {
@@ -80,17 +82,197 @@ namespace
     };
 }
 
+namespace
+{
+    std::string Trim(std::string s)
+    {
+        auto const first = s.find_first_not_of(" \t\r\n");
+        if (first == std::string::npos)
+            return std::string();
+        auto const last = s.find_last_not_of(" \t\r\n");
+        s = s.substr(first, last - first + 1);
+        return s;
+    }
+
+    bool IsKnownBracket(std::string const& bracketName)
+    {
+        for (std::string const& known : ProgressionBracketsNames)
+        {
+            if (known == bracketName)
+                return true;
+        }
+        return false;
+    }
+
+    void WarnIfIntOutOfRange(char const* key, int32 value, int32 minInclusive, int32 maxInclusive)
+    {
+        if (value < minInclusive || value > maxInclusive)
+        {
+            LOG_WARN("server.server",
+                "[mod-progression-blizzlike] Config option '{}'={} is outside expected range [{}..{}].",
+                key, value, minInclusive, maxInclusive);
+        }
+    }
+
+    void ProgressionSystemWarnInvalidConfigOptions()
+    {
+        // Debug options (sanity only; values are still clamped where used).
+        WarnIfIntOutOfRange("ProgressionSystem.Debug.MaxSqlLogLines",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.MaxSqlLogLines", 200),
+            0,
+            5000);
+
+        WarnIfIntOutOfRange("ProgressionSystem.Debug.SqlLogDelayMs",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.SqlLogDelayMs", 0),
+            0,
+            10000);
+
+        WarnIfIntOutOfRange("ProgressionSystem.Debug.BracketApplyDelayMs",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.BracketApplyDelayMs", 0),
+            0,
+            10000);
+
+        // Heroic iLvl gate thresholds (WotLK sanity).
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_1_2",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_1_2", 175),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_2_1",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_2_1", 175),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_2_2",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_2_2", 200),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_2",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_2", 200),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_3",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_3", 220),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_4_1",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_4_1", 240),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_80_4_2",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_80_4_2", 240),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_Icc5_Normal",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_Icc5_Normal", 250),
+            0,
+            400);
+        WarnIfIntOutOfRange("ProgressionSystem.HeroicGs.Required_Icc5_Heroic",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.HeroicGs.Required_Icc5_Heroic", 270),
+            0,
+            400);
+
+        // CustomLocks masks (these are bitmasks, but common values are small).
+        WarnIfIntOutOfRange("ProgressionSystem.CustomLocks.Maps.LockAll.FlagsMask",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.CustomLocks.Maps.LockAll.FlagsMask", 15),
+            0,
+            15);
+        WarnIfIntOutOfRange("ProgressionSystem.CustomLocks.Npcs.ClearNpcFlags.Mask",
+            sConfigMgr->GetOption<int32>("ProgressionSystem.CustomLocks.Npcs.ClearNpcFlags.Mask", 128),
+            0,
+            0x7FFFFFFF);
+
+        // Cross-option sanity: some features require LoadDatabase=1 because they run inside DBUpdater hook.
+        bool const loadDatabase = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadDatabase", true);
+        bool const customLocksEnabled = sConfigMgr->GetOption<bool>("ProgressionSystem.CustomLocks.Enabled", false);
+        std::string disabledAttunements = Trim(sConfigMgr->GetOption<std::string>("ProgressionSystem.DisabledAttunements", ""));
+
+        if (!loadDatabase)
+        {
+            if (customLocksEnabled)
+            {
+                LOG_WARN("server.server",
+                    "[mod-progression-blizzlike] CustomLocks.Enabled=1 but LoadDatabase=0. Custom locks will NOT be applied.");
+            }
+
+            if (!disabledAttunements.empty())
+            {
+                LOG_WARN("server.server",
+                    "[mod-progression-blizzlike] DisabledAttunements is set but LoadDatabase=0. Attunements will NOT be cleared.");
+            }
+        }
+
+        // Arena season mappings: warn for unknown bracket tokens when enabled.
+        for (int season = 1; season <= 8; ++season)
+        {
+            std::string const key = "ProgressionSystem.Bracket.ArenaSeason" + std::to_string(season);
+            std::string const enabledKey = key + ".Enabled";
+
+            bool const enabled = sConfigMgr->GetOption<bool>(enabledKey, false);
+            if (!enabled)
+                continue;
+
+            std::string mapping = sConfigMgr->GetOption<std::string>(key, "");
+            mapping = Trim(std::move(mapping));
+
+            if (mapping.empty())
+            {
+                LOG_WARN("server.server",
+                    "[mod-progression-blizzlike] {}=1 but '{}' is empty; no brackets will be enabled by this mapping.",
+                    enabledKey,
+                    key);
+                continue;
+            }
+
+            for (auto tokenView : Acore::Tokenize(mapping, ',', false))
+            {
+                std::string token(tokenView);
+                token = Trim(std::move(token));
+                if (token.empty())
+                    continue;
+
+                constexpr char const* kPrefix = "Bracket_";
+                if (token.rfind(kPrefix, 0) == 0)
+                    token.erase(0, std::char_traits<char>::length(kPrefix));
+
+                if (!IsKnownBracket(token))
+                {
+                    LOG_WARN("server.server",
+                        "[mod-progression-blizzlike] '{}' contains unknown bracket token '{}'. Valid examples: Bracket_80_2_1 or 80_2_1.",
+                        key,
+                        token);
+                }
+            }
+        }
+    }
+}
+
 static void ProgressionSystemLogEffectiveConfig()
 {
     bool const loadScripts = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadScripts", true);
     bool const loadDatabase = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadDatabase", true);
     bool const reapplyUpdates = sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false);
 
+    uint32 enabledBrackets = 0;
+    for (std::string const& bracketName : ProgressionBracketsNames)
+    {
+        if (IsProgressionBracketEnabled(bracketName))
+            ++enabledBrackets;
+    }
+
     LOG_INFO("server.server",
         "[mod-progression-blizzlike] Effective config: LoadScripts={} LoadDatabase={} ReapplyUpdates={}",
         loadScripts ? 1 : 0, loadDatabase ? 1 : 0, reapplyUpdates ? 1 : 0);
     LOG_INFO("server.server",
         "[mod-progression-blizzlike] If these values do not match your expectations, ensure your config is copied to etc/modules/*.conf (e.g. etc/modules/mod-progression-blizzlike.conf) and contains a [worldserver] section.");
+
+    LOG_INFO("server.server",
+        "[mod-progression-blizzlike] Enabled brackets detected: {}",
+        enabledBrackets);
+
+    if (enabledBrackets == 0)
+    {
+        LOG_WARN("server.server",
+            "[mod-progression-blizzlike] No ProgressionSystem.Bracket_* are enabled. If you expected bracket SQL/scripts to load, ensure you're editing the active etc/modules/*.conf (not the .conf.dist template).");
+    }
 }
 
 static void ProgressionSystemWarnUnsupportedConfigOptions()
@@ -187,6 +369,7 @@ void Addmod_progression_systemScripts()
     ProgressionSystemWarnUnsupportedConfigOptions();
 
     ProgressionSystemLogEffectiveConfig();
+    ProgressionSystemWarnInvalidConfigOptions();
 
     AddProgressionSystemScripts();
     AddSC_progression_module_commandscript();

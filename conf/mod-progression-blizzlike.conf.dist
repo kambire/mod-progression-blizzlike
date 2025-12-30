@@ -2,6 +2,10 @@
 # Single config template distributed with this module.
 # Copy it into your AzerothCore `etc/modules/` folder (you may rename it to any `.conf` name).
 #
+# Notes:
+# - The module logs warnings when some numeric options are outside expected ranges.
+# - List options (e.g. `ProgressionSystem.DisabledAttunements`, `ProgressionSystem.CustomLocks.*`) ignore invalid tokens and log warnings.
+#
 # Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 #
 
@@ -24,6 +28,20 @@ ProgressionSystem.LoadScripts = 1
 #
 
 ProgressionSystem.LoadDatabase = 1
+
+#
+#    ProgressionSystem.BracketSqlRoot
+#        Description: Optional override for where the module should look for `Bracket_*` folders.
+#                     Use this if worldserver is launched with a different working directory (e.g. Windows service),
+#                     or if the module folder name is not exactly `mod-progression-blizzlike`.
+#
+#                     This value should point to the module's `src` directory that contains `Bracket_0`, `Bracket_1_19`, etc.
+#
+#        Default:     "" (auto-detect)
+#        Example:     ProgressionSystem.BracketSqlRoot = "D:/azerothcore-wotlk/modules/mod-progression-blizzlike/src"
+#
+
+ProgressionSystem.BracketSqlRoot = ""
 
 #
 #    ProgressionSystem.ReapplyUpdates
@@ -51,7 +69,7 @@ ProgressionSystem.Debug.LogPendingSql = 1
 #        Default:     200
 #
 
-ProgressionSystem.Debug.MaxSqlLogLines = 200
+ProgressionSystem.Debug.MaxSqlLogLines = 500
 
 #
 #    ProgressionSystem.Debug.LogAppliedSql
@@ -70,7 +88,7 @@ ProgressionSystem.Debug.LogAppliedSql = 1
 #        Default:     0 (no delay)
 #
 
-ProgressionSystem.Debug.SqlLogDelayMs = 200
+ProgressionSystem.Debug.SqlLogDelayMs = 1000
 
 #
 #    ProgressionSystem.Debug.BracketApplyDelayMs
@@ -79,7 +97,7 @@ ProgressionSystem.Debug.SqlLogDelayMs = 200
 #        Default:     0 (no delay)
 #
 
-ProgressionSystem.Debug.BracketApplyDelayMs = 200
+ProgressionSystem.Debug.BracketApplyDelayMs = 1
 
 #
 #    ProgressionSystem.HeroicGs.*

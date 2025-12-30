@@ -30,7 +30,7 @@ namespace
         return s;
     }
 
-    std::unordered_set<uint32> ParseIdList(std::string const& raw)
+    std::unordered_set<uint32> ParseIdList(char const* key, std::string const& raw)
     {
         std::unordered_set<uint32> ids;
         std::string list = Trim(raw);
@@ -44,8 +44,17 @@ namespace
             if (token.empty())
                 continue;
 
-            if (auto parsed = Acore::StringTo<uint32>(token))
-                ids.insert(parsed.value());
+            auto parsed = Acore::StringTo<uint32>(token);
+            if (!parsed)
+            {
+                LOG_WARN("server.server",
+                    "[mod-progression-blizzlike] Ignoring invalid id '{}' in '{}' (expected comma-separated integers).",
+                    token,
+                    key ? key : "<unknown>");
+                continue;
+            }
+
+            ids.insert(parsed.value());
         }
 
         return ids;
@@ -289,16 +298,21 @@ void ProgressionSystemApplyCustomLocks()
     uint32 const flagsAllMask = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.CustomLocks.Maps.LockAll.FlagsMask", 15)));
 
     std::unordered_set<uint32> const lockAllMaps = ParseIdList(
+        "ProgressionSystem.CustomLocks.Maps.LockAll",
         sConfigMgr->GetOption<std::string>("ProgressionSystem.CustomLocks.Maps.LockAll", ""));
     std::unordered_set<uint32> const lockHeroicOnlyMaps = ParseIdList(
+        "ProgressionSystem.CustomLocks.Maps.LockHeroicOnly",
         sConfigMgr->GetOption<std::string>("ProgressionSystem.CustomLocks.Maps.LockHeroicOnly", ""));
 
     std::unordered_set<uint32> const battlegroundIds = ParseIdList(
+        "ProgressionSystem.CustomLocks.Battlegrounds.Ids",
         sConfigMgr->GetOption<std::string>("ProgressionSystem.CustomLocks.Battlegrounds.Ids", ""));
     std::unordered_set<uint32> const battlegroundMapIds = ParseIdList(
+        "ProgressionSystem.CustomLocks.Battlegrounds.MapIds",
         sConfigMgr->GetOption<std::string>("ProgressionSystem.CustomLocks.Battlegrounds.MapIds", ""));
 
     std::unordered_set<uint32> const npcClearFlagsEntries = ParseIdList(
+        "ProgressionSystem.CustomLocks.Npcs.ClearNpcFlags",
         sConfigMgr->GetOption<std::string>("ProgressionSystem.CustomLocks.Npcs.ClearNpcFlags", ""));
     uint32 const npcClearMask = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.CustomLocks.Npcs.ClearNpcFlags.Mask", 128)));
 

@@ -85,57 +85,111 @@ bool IsProgressionBracketEnabled(std::string const& bracketName)
 
 inline std::string DetermineModuleBracketBasePath()
 {
-    namespace fs = std::filesystem;
-
-    auto Normalize = [](fs::path const& p)
+    static std::string const cached = []() -> std::string
     {
-        // Use forward slashes for consistency across platforms and to avoid mixing separators
-        // when composing update names.
-        return p.generic_string();
-    };
+        namespace fs = std::filesystem;
 
-    // Worldserver's working directory differs depending on how it is launched (Windows service,
-    // IDE, acore.sh, etc). Probe a few common relative locations.
-    std::array<std::string, 5> const candidates =
-    {
-        "modules/mod-progression-blizzlike/src/Bracket_",
-        "../modules/mod-progression-blizzlike/src/Bracket_",
-        "../../modules/mod-progression-blizzlike/src/Bracket_",
-        "../../../modules/mod-progression-blizzlike/src/Bracket_",
-        "../../../../modules/mod-progression-blizzlike/src/Bracket_",
-    };
-
-    for (std::string const& base : candidates)
-    {
-        // Probe only the module/bracket folder itself (independent of auth/characters/world).
-        // Not every bracket ships sql/auth or sql/characters, so those folders must not be required.
-        fs::path const probe = fs::path(base + "0");
-        if (fs::exists(probe) && fs::is_directory(probe))
+        auto Normalize = [](fs::path const& p)
         {
-            // Important: DBUpdater records the directory prefix into `updates.name`.
-            // If worldserver is launched with a different working directory, a relative prefix like
-            // "../modules/..." can change across runs and make already-applied SQL look "new".
-            // Resolve to a stable absolute path to keep `updates.name` consistent.
-            fs::path canonicalProbe;
-            try
+            // Use forward slashes for consistency across platforms and to avoid mixing separators
+            // when composing update names.
+            return p.generic_string();
+        };
+
+        // Optional: explicit path override for environments where cwd is unreliable (Windows service, etc).
+        // This should point to the module's `src` directory that contains `Bracket_0`, `Bracket_1_19`, ...
+        std::string configuredRoot = sConfigMgr->GetOption<std::string>("ProgressionSystem.BracketSqlRoot", "");
+        configuredRoot = Trim(std::move(configuredRoot));
+        if (!configuredRoot.empty())
+        {
+            fs::path rootPath(configuredRoot);
+
+            // Accept values like ".../src", ".../src/Bracket_0", or ".../src/Bracket_".
+            std::string const leaf = rootPath.filename().generic_string();
+            if (leaf.rfind("Bracket_", 0) == 0)
+                rootPath = rootPath.parent_path();
+
+            fs::path const probe = rootPath / "Bracket_0";
+            if (fs::exists(probe) && fs::is_directory(probe))
             {
-                canonicalProbe = fs::canonical(probe);
-            }
-            catch (...)
-            {
-                canonicalProbe = fs::absolute(probe);
+                fs::path canonicalProbe;
+                try
+                {
+                    canonicalProbe = fs::canonical(probe);
+                }
+                catch (...)
+                {
+                    canonicalProbe = fs::absolute(probe);
+                }
+
+                std::string const stableBase = Normalize(canonicalProbe.parent_path()) + "/Bracket_";
+                LOG_INFO("server.server",
+                    "[mod-progression-blizzlike] Using bracket SQL base path from ProgressionSystem.BracketSqlRoot: '{}'",
+                    stableBase);
+                return stableBase;
             }
 
-            std::string const stableBase = Normalize(canonicalProbe.parent_path()) + "/Bracket_";
-            LOG_INFO("server.server", "[mod-progression-blizzlike] Using bracket SQL base path: '{}'", stableBase);
-            return stableBase;
+            LOG_WARN("server.server",
+                "[mod-progression-blizzlike] ProgressionSystem.BracketSqlRoot='{}' is set but Bracket_0 was not found under it; falling back to auto-detect.",
+                configuredRoot);
         }
-    }
 
-    LOG_WARN("server.server",
-        "[mod-progression-blizzlike] Could not locate bracket SQL folders from the current working directory. "
-        "Tried common relative paths like './modules/...'. Falling back to 'modules/mod-progression-blizzlike/src/Bracket_'.");
-    return "modules/mod-progression-blizzlike/src/Bracket_";
+        // Worldserver's working directory differs depending on how it is launched (Windows service,
+        // IDE, acore.sh, etc). Probe a few common relative locations.
+        std::array<std::string, 5> const candidates =
+        {
+            "modules/mod-progression-blizzlike/src/Bracket_",
+            "../modules/mod-progression-blizzlike/src/Bracket_",
+            "../../modules/mod-progression-blizzlike/src/Bracket_",
+            "../../../modules/mod-progression-blizzlike/src/Bracket_",
+            "../../../../modules/mod-progression-blizzlike/src/Bracket_",
+        };
+
+        for (std::string const& base : candidates)
+        {
+            // Probe only the module/bracket folder itself (independent of auth/characters/world).
+            // Not every bracket ships sql/auth or sql/characters, so those folders must not be required.
+            fs::path const probe = fs::path(base + "0");
+            if (fs::exists(probe) && fs::is_directory(probe))
+            {
+                // Important: DBUpdater records the directory prefix into `updates.name`.
+                // If worldserver is launched with a different working directory, a relative prefix like
+                // "../modules/..." can change across runs and make already-applied SQL look "new".
+                // Resolve to a stable absolute path to keep `updates.name` consistent.
+                fs::path canonicalProbe;
+                try
+                {
+                    canonicalProbe = fs::canonical(probe);
+                }
+                catch (...)
+                {
+                    canonicalProbe = fs::absolute(probe);
+                }
+
+                std::string const stableBase = Normalize(canonicalProbe.parent_path()) + "/Bracket_";
+                LOG_INFO("server.server", "[mod-progression-blizzlike] Using bracket SQL base path: '{}'", stableBase);
+                return stableBase;
+            }
+        }
+
+        std::string cwd = "<unknown>";
+        try
+        {
+            cwd = Normalize(fs::current_path());
+        }
+        catch (...)
+        {
+        }
+
+        LOG_WARN("server.server",
+            "[mod-progression-blizzlike] Could not locate bracket SQL folders from the current working directory. "
+            "cwd='{}'. Tried common relative paths like './modules/...'. You can also set ProgressionSystem.BracketSqlRoot "
+            "to an absolute path to '.../modules/mod-progression-blizzlike/src'. Falling back to 'modules/mod-progression-blizzlike/src/Bracket_'.",
+            cwd);
+        return "modules/mod-progression-blizzlike/src/Bracket_";
+    }();
+
+    return cached;
 }
 
 template <typename TDatabase>
@@ -409,8 +463,27 @@ public:
 
         // Remove disabled attunements
         std::string disabledAttunements = sConfigMgr->GetOption<std::string>("ProgressionSystem.DisabledAttunements", "");
-        for (auto& itr : Acore::Tokenize(disabledAttunements, ',', false))
-            WorldDatabase.Query("DELETE FROM dungeon_access_requirements WHERE dungeon_access_id = {}", Acore::StringTo<uint32>(itr).value());
+        disabledAttunements = Trim(std::move(disabledAttunements));
+        for (auto tokenView : Acore::Tokenize(disabledAttunements, ',', false))
+        {
+            std::string token(tokenView);
+            token = Trim(std::move(token));
+            if (token.empty())
+                continue;
+
+            auto parsed = Acore::StringTo<uint32>(token);
+            if (!parsed)
+            {
+                LOG_WARN("server.server",
+                    "[mod-progression-blizzlike] Ignoring invalid dungeon_access_id '{}' in ProgressionSystem.DisabledAttunements (expected comma-separated integers).",
+                    token);
+                continue;
+            }
+
+            WorldDatabase.Query(
+                "DELETE FROM dungeon_access_requirements WHERE dungeon_access_id = {}",
+                parsed.value());
+        }
 
         // Apply any custom lock overlays AFTER bracket SQL updates.
         extern void ProgressionSystemApplyCustomLocks();
