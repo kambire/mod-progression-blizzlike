@@ -54,6 +54,34 @@ ProgressionSystem.Debug.LogPendingSql = 0
 ProgressionSystem.Debug.MaxSqlLogLines = 200
 
 #
+#    ProgressionSystem.Debug.LogAppliedSql
+#        Description: When enabled, logs which SQL files were actually applied per bracket (diff from `updates` table
+#                     before/after DBUpdater runs). Useful to confirm execution order.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+
+ProgressionSystem.Debug.LogAppliedSql = 0
+
+#
+#    ProgressionSystem.Debug.SqlLogDelayMs
+#        Description: When debug SQL logging is enabled, sleep this many milliseconds between log lines.
+#                     This makes it easier to watch the apply order in the console.
+#        Default:     0 (no delay)
+#
+
+ProgressionSystem.Debug.SqlLogDelayMs = 0
+
+#
+#    ProgressionSystem.Debug.BracketApplyDelayMs
+#        Description: Sleep this many milliseconds after applying each bracket directory (per DB).
+#                     Use this only for troubleshooting; it slows server startup.
+#        Default:     0 (no delay)
+#
+
+ProgressionSystem.Debug.BracketApplyDelayMs = 0
+
+#
 #    ProgressionSystem.HeroicGs.*
 #        Description: Optional gate to prevent entering heroic 5-man dungeons unless the player meets
 #                     a minimum average equipped item level.

@@ -8,8 +8,12 @@
 #include "Tokenize.h"
 #include "StringConvert.h"
 
+#include <algorithm>
+#include <chrono>
 #include <filesystem>
+#include <thread>
 #include <unordered_set>
+#include <vector>
 
 namespace
 {
@@ -140,6 +144,27 @@ static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string con
 template <typename TDatabase>
 static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> const& directories, std::string const& folderName);
 
+template <typename TDatabase>
+static std::unordered_set<std::string> CollectAppliedUpdateNames(TDatabase& db, std::vector<std::string> const& directories)
+{
+    std::unordered_set<std::string> applied;
+    applied.reserve(4096);
+
+    for (std::string const& dir : directories)
+    {
+        auto result = db.Query("SELECT name FROM updates WHERE name LIKE '{}'", dir + "/%");
+        if (!result)
+            continue;
+
+        do
+        {
+            applied.insert((*result)[0].template Get<std::string>());
+        } while (result->NextRow());
+    }
+
+    return applied;
+}
+
 template <typename TConnection, typename TDatabase>
 static void ApplyDbUpdatesInBracketOrder(TDatabase& db, uint32 updateFlags, std::string const& folderName)
 {
@@ -154,6 +179,10 @@ static void ApplyDbUpdatesInBracketOrder(TDatabase& db, uint32 updateFlags, std:
     namespace fs = std::filesystem;
 
     std::string const base = DetermineModuleBracketBasePath();
+
+    bool const logPending = sConfigMgr->GetOption<bool>("ProgressionSystem.Debug.LogPendingSql", false);
+    bool const logApplied = sConfigMgr->GetOption<bool>("ProgressionSystem.Debug.LogAppliedSql", false);
+    uint32 const bracketDelayMs = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.BracketApplyDelayMs", 0)));
 
     uint32 totalDirs = 0;
     for (std::string const& bracketName : ProgressionBracketsNames)
@@ -179,8 +208,60 @@ static void ApplyDbUpdatesInBracketOrder(TDatabase& db, uint32 updateFlags, std:
 
         // Apply strictly in bracket order: one DBUpdater call per bracket.
         std::vector<std::string> dirs = { dir };
+
+        if (logPending || logApplied)
+        {
+            LOG_INFO("server.server", "[mod-progression-blizzlike] Applying {} SQL updates for bracket '{}' from '{}'",
+                folderName, bracketName, dir);
+        }
+
+        std::unordered_set<std::string> appliedBefore;
+        if (logApplied)
+        {
+            appliedBefore = CollectAppliedUpdateNames(db, dirs);
+        }
+
         LogModulePendingSqlFiles(db, dirs, folderName);
         DBUpdater<TConnection>::Update(db, &dirs);
+
+        if (logApplied)
+        {
+            std::unordered_set<std::string> appliedAfter = CollectAppliedUpdateNames(db, dirs);
+
+            std::vector<std::string> newlyApplied;
+            newlyApplied.reserve(appliedAfter.size());
+            for (std::string const& name : appliedAfter)
+            {
+                if (appliedBefore.find(name) == appliedBefore.end())
+                    newlyApplied.push_back(name);
+            }
+
+            std::sort(newlyApplied.begin(), newlyApplied.end());
+
+            uint32 const delayMs = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.SqlLogDelayMs", 0)));
+
+            if (newlyApplied.empty())
+            {
+                LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL bracket '{}': no new updates applied.",
+                    folderName, bracketName);
+            }
+            else
+            {
+                LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL bracket '{}': applied {} update(s):",
+                    folderName, bracketName, static_cast<uint32>(newlyApplied.size()));
+
+                for (std::string const& name : newlyApplied)
+                {
+                    LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL (applied): {}",
+                        folderName, name);
+                    if (delayMs > 0)
+                        std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+                }
+            }
+        }
+
+        if (bracketDelayMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(bracketDelayMs));
     }
 
     if (totalDirs == 0)
@@ -228,28 +309,25 @@ static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> con
 
     uint32 const maxLines = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.MaxSqlLogLines", 200)));
     bool const reapply = sConfigMgr->GetOption<bool>("ProgressionSystem.ReapplyUpdates", false);
+    uint32 const delayMs = static_cast<uint32>(std::max<int32>(0, sConfigMgr->GetOption<int32>("ProgressionSystem.Debug.SqlLogDelayMs", 0)));
 
     namespace fs = std::filesystem;
 
     // Collect already-applied update names for these directories (best-effort).
-    std::unordered_set<std::string> applied;
-    applied.reserve(4096);
-
-    for (std::string const& dir : directories)
-    {
-        auto result = db.Query("SELECT name FROM updates WHERE name LIKE '{}'", dir + "/%");
-        if (!result)
-            continue;
-
-        do
-        {
-            applied.insert((*result)[0].template Get<std::string>());
-        } while (result->NextRow());
-    }
+    std::unordered_set<std::string> applied = CollectAppliedUpdateNames(db, directories);
 
     uint32 printed = 0;
     uint32 totalPending = 0;
     uint32 totalFiles = 0;
+
+    struct SqlLogItem
+    {
+        std::string updateName;
+        bool isApplied = false;
+    };
+
+    std::vector<SqlLogItem> items;
+    items.reserve(512);
 
     for (std::string const& dir : directories)
     {
@@ -276,15 +354,28 @@ static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> con
             if (!shouldPrint)
                 continue;
 
-            if (printed < maxLines)
-            {
-                LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL {}: {}",
-                    folderName,
-                    reapply ? "(reapply)" : "(pending)",
-                    updateName);
-                ++printed;
-            }
+            items.push_back(SqlLogItem{ updateName, isApplied });
         }
+    }
+
+    std::sort(items.begin(), items.end(), [](SqlLogItem const& a, SqlLogItem const& b)
+    {
+        return a.updateName < b.updateName;
+    });
+
+    for (SqlLogItem const& item : items)
+    {
+        if (printed >= maxLines)
+            break;
+
+        LOG_INFO("server.server", "[mod-progression-blizzlike] {} SQL {}: {}",
+            folderName,
+            reapply ? "(reapply)" : "(pending)",
+            item.updateName);
+        ++printed;
+
+        if (delayMs > 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
     }
 
     LOG_INFO("server.server",

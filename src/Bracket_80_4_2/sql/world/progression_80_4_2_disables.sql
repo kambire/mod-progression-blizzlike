@@ -30,6 +30,10 @@ DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (533, 603, 61
 DELETE FROM `disables`
 WHERE `sourceType` = 2 AND `entry` IN (574, 575, 576, 578, 595, 599, 600, 601, 602, 604, 608, 619);
 
+-- Ensure WotLK heroic dungeons are enabled in RDF/LFG as well (in case they were accidentally disabled).
+DELETE FROM `disables`
+WHERE `sourceType` = 8 AND `entry` IN (574, 575, 576, 578, 595, 599, 600, 601, 602, 604, 608, 619);
+
 -- Make the quest Assault on the Sanctum available again.
 DELETE FROM `disables` WHERE `sourceType` = 1 AND `entry` = 26013;
 

@@ -261,7 +261,7 @@ namespace
                 return;
 
             uint32 const mapId = map->GetId();
-            Difficulty const difficulty = map->GetDifficultyID();
+            Difficulty const difficulty = map->GetDifficulty();
 
             // Enforce for heroic dungeons, plus optional ICC5 normal-mode gate.
             if (difficulty != kDungeonDifficultyHeroic && !IsIcc5Map(mapId))
@@ -279,8 +279,11 @@ namespace
                 "Necesitas un iLvl promedio minimo para entrar aqui. Requisito: %u. Tu iLvl promedio: %.1f.",
                 requiredIlvl, avgIlvl);
 
-            // Best-effort safe exit. (Core provides this on AzerothCore/Trinity-derived codebases.)
-            player->TeleportToHomebind();
+            // Safe exit: send back to capital (homebind helper API is not available on all cores).
+            if (player->GetTeamId() == TEAM_ALLIANCE)
+                player->TeleportTo(0, -8840.988281f, 651.726135f, 96.999428f, 0.473160f); // Stormwind
+            else
+                player->TeleportTo(1, 1660.330933f, -4425.020020f, 17.528446f, 5.051634f); // Orgrimmar
         }
     };
 } // namespace

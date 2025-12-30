@@ -92,3 +92,6 @@ DELETE FROM `disables` WHERE `sourceType` IN (2, 8) AND `entry` IN (533, 615, 61
 -- Ensure WotLK heroic dungeons are enabled as well.
 -- Some servers may jump straight to 80_2 without having previously applied 80_1_2.
 DELETE FROM `disables` WHERE `entry` IN (574, 575, 576, 578, 595, 599, 600, 601, 602, 604, 608, 619) AND `sourceType` = 2;
+
+-- Ensure WotLK heroic dungeons are enabled in RDF/LFG as well (in case they were accidentally disabled).
+DELETE FROM `disables` WHERE `entry` IN (574, 575, 576, 578, 595, 599, 600, 601, 602, 604, 608, 619) AND `sourceType` = 8;
