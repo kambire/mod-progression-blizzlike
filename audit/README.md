@@ -74,6 +74,9 @@ It is intentionally **NOT** part of the bracket autoload pipeline (DBUpdater).
 - `BRACKET_RUNTIME_REPORT.md`
   - Generated report of what each `ProgressionSystem.Bracket_*` enables in this module (autoload SQL + scripts).
   - Regenerate with `powershell -ExecutionPolicy Bypass -File scripts/generate_bracket_report.ps1`.
+- `rollbacks/`
+  - Manual rollback SQL for some heavy data operations (e.g. WotLK heroic emblem normalization).
+  - These files are intentionally NOT inside `src/Bracket_*/sql/world` to avoid DBUpdater auto-applying them.
 - `IMPLEMENTACION_VENDORS_SQL.md`
   - Supporting documentation and validation guides.
 

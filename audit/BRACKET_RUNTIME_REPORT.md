@@ -1,6 +1,6 @@
 ﻿# Bracket Runtime Report (Autoload SQL + Scripts)
 
-Generated: 2025-12-30 18:21:19
+Generated: 2025-12-30 20:39:20
 Generator: `scripts/generate_bracket_report.ps1`
 
 This document focuses on what each bracket enables **in this module**:
@@ -1338,7 +1338,7 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (13 files)
+#### world (12 files)
 - `80_1_2_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_1_2 - HEROIC 5-man BOSSES emblem normalization
@@ -1360,11 +1360,6 @@ Notes:
   - -------------------------
   - Bracket configuration
   - -------------------------
-- `80_1_2_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_1_2 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_1_2_emblems_heroic_bosses
-  - ============================================================================
 - `progression_80_1_2_disables.sql` (tables: `disables`)
   - Enable heroic dungeons
   - WotLK baseline lock (deny-by-default): ensure future 80 content is blocked even if earlier WotLK brackets were skipped.
@@ -1501,7 +1496,7 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (15 files)
+#### world (14 files)
 - `80_2_1_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_2_1 - HEROIC 5-man BOSSES emblem normalization
@@ -1510,11 +1505,6 @@ Notes:
   - 80_2_1 => Emblem of Heroism (40752)
   - PARTS (in order): A) REPORT  B) BACKUP  C) APPLY  D) VERIFY
   - GM reload note: .reload creature_loot_template (if supported) or restart worldserver.
-  - ============================================================================
-- `80_2_1_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_2_1 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_2_1_emblems_heroic_bosses
   - ============================================================================
 - `progression_80_1_1_npc_vendor_down.sql` (tables: `npc_vendor`)
   - (no header comment; open the file for details)
@@ -1679,17 +1669,12 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (17 files)
+#### world (16 files)
 - `80_2_2_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_2_2 - HEROIC 5-man BOSSES emblem normalization
   - Desired emblem: Emblem of Valor (40753)
   - Maps: WotLK launch dungeon set (no ToC, no ICC 5-mans here)
-  - ============================================================================
-- `80_2_2_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_2_2 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_2_2_emblems_heroic_bosses
   - ============================================================================
 - `progression_0_disables_ArgentTournamentConstructionquests_down.sql` (tables: (unknown))
   - Argent Tournament belongs to Bracket_80_3.
@@ -1840,17 +1825,12 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (18 files)
+#### world (17 files)
 - `80_3_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_3 - HEROIC 5-man BOSSES emblem normalization
   - Desired emblem: Emblem of Conquest (45624)
   - Maps: WotLK launch + Trial of the Champion (650)
-  - ============================================================================
-- `80_3_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_3 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_3_emblems_heroic_bosses
   - ============================================================================
 - `progression_80_1_epic_gems_down.sql` (tables: `disables`, `npc_vendor`)
   - (no header comment; open the file for details)
@@ -1999,18 +1979,13 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (17 files)
+#### world (16 files)
 - `80_4_1_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_4_1 - HEROIC 5-man BOSSES emblem normalization
   - Desired emblem: Emblem of Triumph (47241)
   - Maps: WotLK launch + Trial of the Champion (650) + ICC 5-mans (632/658/668)
   - NOTE: "wrong" = any emblem in the emblem set except @EMBLEM_RIGHT.
-  - ============================================================================
-- `80_4_1_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_4_1 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_4_1_emblems_heroic_bosses
   - ============================================================================
 - `progression_0_creature_undercity_guardian_down.sql` (tables: `creature`)
   - Restore Kor'Kron Overseer in Undercity
@@ -2140,18 +2115,13 @@ Notes:
 #### characters (0 files)
 - (directory missing)
 
-#### world (13 files)
+#### world (12 files)
 - `80_4_2_emblems_heroic_bosses.sql` (tables: `creature_loot_template`, `IF`, `tmp_heroic_bosses`, `tmp_lootids_fix`, `tmp_maps`)
   - ============================================================================
   - WotLK Bracket 80_4_2 - HEROIC 5-man BOSSES emblem normalization
   - Desired emblem: Emblem of Triumph (47241)
   - Maps: WotLK launch + Trial of the Champion (650) + ICC 5-mans (632/658/668)
   - NOTE: "wrong" = any emblem in the emblem set except @EMBLEM_RIGHT.
-  - ============================================================================
-- `80_4_2_emblems_heroic_bosses_rollback.sql` (tables: `creature_loot_template`, `tmp_restore_keys`)
-  - ============================================================================
-  - ROLLBACK - WotLK Bracket 80_4_2 - HEROIC 5-man BOSSES emblem normalization
-  - Restores rows from backup_80_4_2_emblems_heroic_bosses
   - ============================================================================
 - `progression_80_1_kirin_tor_rings_down.sql` (tables: `npc_vendor`)
   - (no header comment; open the file for details)
