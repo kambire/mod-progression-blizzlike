@@ -373,6 +373,7 @@ Bracket_80_1_2 (WotLK S5):
 - If the server is started with a different working directory (Windows service, IDE, etc), set `ProgressionSystem.BracketSqlRoot` to an absolute path to `.../modules/mod-progression-blizzlike/src` so the module can find `Bracket_*` SQL folders.
 - If your core logs `Config: Missing property ProgressionSystem.BracketSqlRoot`, add `ProgressionSystem.BracketSqlRoot = ""` to your module config to silence it (empty means auto-detect).
 - Confirm AzerothCore DBUpdater is enabled in your `worldserver.conf` (Updates settings), otherwise no module SQL will be applied.
+- If you edited a bracket `.sql` file but changes don't apply: DBUpdater remembers applied updates in the `updates` table (often by filename). Enable `ProgressionSystem.ReapplyUpdates = 1`, rename the SQL file, or delete its row from `updates`.
 
 ### Vendor not visible
 - Check the vendor NPC is spawned and has the vendor flag enabled (vendor flag / `npcflag` depends on core/DB).

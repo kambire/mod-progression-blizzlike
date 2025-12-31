@@ -51,6 +51,11 @@ ProgressionSystem.BracketSqlRoot = ""
 #
 #    ProgressionSystem.ReapplyUpdates
 #        Description: Always reapply every SQL file on start up. Warning: impacts start up times.
+#                     Note: DBUpdater tracks applied SQL in the `updates` table (commonly by filename only).
+#                     If you edit a SQL file but keep the same filename, it will NOT rerun unless you:
+#                     - enable this option, OR
+#                     - rename the SQL file, OR
+#                     - delete the corresponding row from `updates`.
 #        Default:     1 - Enabled
 #                     0 - Disabled
 #

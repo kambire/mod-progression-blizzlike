@@ -170,10 +170,10 @@ inline std::string DetermineModuleBracketBasePath()
             fs::path const probe = fs::path(base + "0");
             if (fs::exists(probe) && fs::is_directory(probe))
             {
-                // Important: DBUpdater records the directory prefix into `updates.name`.
-                // If worldserver is launched with a different working directory, a relative prefix like
-                // "../modules/..." can change across runs and make already-applied SQL look "new".
-                // Resolve to a stable absolute path to keep `updates.name` consistent.
+                // Note: depending on the core/customization, `updates.name` may store only the SQL filename
+                // ("file.sql") or a directory-prefixed name (".../sql/world/file.sql").
+                // Resolve to a stable absolute path to keep the directory-prefixed case consistent and to
+                // keep logs predictable across different working directories.
                 fs::path canonicalProbe;
                 try
                 {
@@ -216,6 +216,65 @@ static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string con
 template <typename TDatabase>
 static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> const& directories, std::string const& folderName);
 
+namespace
+{
+    std::string EscapeSqlString(std::string const& s)
+    {
+        std::string out;
+        out.reserve(s.size());
+        for (char c : s)
+        {
+            if (c == '\\' || c == '\'')
+                out.push_back('\\');
+            out.push_back(c);
+        }
+        return out;
+    }
+
+    std::vector<std::string> CollectSqlUpdateFilenames(std::vector<std::string> const& directories)
+    {
+        namespace fs = std::filesystem;
+
+        std::vector<std::string> names;
+        names.reserve(512);
+
+        for (std::string const& dir : directories)
+        {
+            fs::path const p(dir);
+            if (!fs::exists(p) || !fs::is_directory(p))
+                continue;
+
+            for (fs::directory_iterator it(p); it != fs::directory_iterator(); ++it)
+            {
+                if (!it->is_regular_file())
+                    continue;
+                if (it->path().extension() != ".sql")
+                    continue;
+
+                names.push_back(it->path().filename().string());
+            }
+        }
+
+        std::sort(names.begin(), names.end());
+        names.erase(std::unique(names.begin(), names.end()), names.end());
+        return names;
+    }
+
+    std::string BuildSqlInList(std::vector<std::string> const& items, size_t begin, size_t end)
+    {
+        std::string in;
+        for (size_t i = begin; i < end; ++i)
+        {
+            if (!in.empty())
+                in += ",";
+            in += "'";
+            in += EscapeSqlString(items[i]);
+            in += "'";
+        }
+        return in;
+    }
+}
+
 template <typename TDatabase>
 static std::unordered_set<std::string> CollectAppliedUpdateNames(TDatabase& db, std::vector<std::string> const& directories)
 {
@@ -225,6 +284,27 @@ static std::unordered_set<std::string> CollectAppliedUpdateNames(TDatabase& db, 
     for (std::string const& dir : directories)
     {
         auto result = db.Query("SELECT name FROM updates WHERE name LIKE '{}'", dir + "/%");
+        if (!result)
+            continue;
+
+        do
+        {
+            applied.insert((*result)[0].template Get<std::string>());
+        } while (result->NextRow());
+    }
+
+    // AzerothCore's `updates.name` is commonly stored as the SQL filename only (no directory prefix).
+    // We support both formats to make ReapplyUpdates/LogPendingSql work across setups.
+    std::vector<std::string> const filenames = CollectSqlUpdateFilenames(directories);
+    constexpr size_t kChunkSize = 200;
+    for (size_t i = 0; i < filenames.size(); i += kChunkSize)
+    {
+        size_t const end = std::min(filenames.size(), i + kChunkSize);
+        std::string const inList = BuildSqlInList(filenames, i, end);
+        if (inList.empty())
+            continue;
+
+        auto result = db.Query("SELECT name FROM updates WHERE name IN ({})", inList);
         if (!result)
             continue;
 
@@ -400,18 +480,54 @@ static void DeleteModuleUpdatesForEnabledBrackets(TDatabase& db, std::string con
     // To force reapply, delete only rows that belong to this module's enabled bracket directories.
     // This is intentionally scoped (we do NOT delete global 'progression_%' entries).
     std::string const base = DetermineModuleBracketBasePath();
+    namespace fs = std::filesystem;
+
+    std::vector<std::string> filenames;
+    filenames.reserve(1024);
 
     for (std::string const& bracketName : ProgressionBracketsNames)
     {
         if (!IsProgressionBracketEnabled(bracketName))
             continue;
 
-        std::string const dirPrefix = base + bracketName + "/sql/" + folderName + "/";
+        std::string const dir = base + bracketName + "/sql/" + folderName;
+        std::string const dirPrefix = dir + "/";
 
-        // Most AzerothCore setups store the relative path (including directory) in `updates.name`.
-        // If a custom core stores only the filename, this won't match; in that case, force reapply
-        // must be done by clearing `updates` manually.
+        // Some setups store a directory prefix in `updates.name` (e.g. "…/sql/world/file.sql").
+        // Always clear those rows if present.
         db.Query("DELETE FROM updates WHERE name LIKE '{}'", dirPrefix + "%");
+
+        // AzerothCore commonly stores ONLY the filename in `updates.name` (e.g. "file.sql").
+        // Collect the filenames present in this directory to clear those rows too.
+        fs::path const p(dir);
+        if (!fs::exists(p) || !fs::is_directory(p))
+            continue;
+
+        for (fs::directory_iterator it(p); it != fs::directory_iterator(); ++it)
+        {
+            if (!it->is_regular_file())
+                continue;
+            if (it->path().extension() != ".sql")
+                continue;
+            filenames.push_back(it->path().filename().string());
+        }
+    }
+
+    if (!filenames.empty())
+    {
+        std::sort(filenames.begin(), filenames.end());
+        filenames.erase(std::unique(filenames.begin(), filenames.end()), filenames.end());
+
+        constexpr size_t kChunkSize = 200;
+        for (size_t i = 0; i < filenames.size(); i += kChunkSize)
+        {
+            size_t const end = std::min(filenames.size(), i + kChunkSize);
+            std::string const inList = BuildSqlInList(filenames, i, end);
+            if (inList.empty())
+                continue;
+
+            db.Query("DELETE FROM updates WHERE name IN ({})", inList);
+        }
     }
 }
 
@@ -459,8 +575,11 @@ static void LogModulePendingSqlFiles(TDatabase& db, std::vector<std::string> con
 
             ++totalFiles;
 
-            std::string const updateName = dir + "/" + it->path().filename().string();
-            bool const isApplied = (applied.find(updateName) != applied.end());
+            std::string const filename = it->path().filename().string();
+            std::string const updateName = dir + "/" + filename;
+            bool const isApplied =
+                (applied.find(updateName) != applied.end()) ||
+                (applied.find(filename) != applied.end());
             bool const shouldPrint = reapply ? true : !isApplied;
 
             if (!isApplied)
