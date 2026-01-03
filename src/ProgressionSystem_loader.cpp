@@ -28,58 +28,12 @@ namespace
         char const* defaultValue;
     };
 
-    // Options present in mod-progression-blizzlike.conf.dist but currently NOT implemented anywhere in this module.
-    // We emit warnings only when their configured value differs from the documented default.
-    BoolOption constexpr kUnsupportedBoolOptions[] =
-    {
-        { "ProgressionSystem.EnforceItemRestrictions", false },
-        { "ProgressionSystem.BlockFutureVendors", false },
-        { "ProgressionSystem.EnforceArenaVendorProgression", false },
-        { "ProgressionSystem.RestrictArenaRewards", false },
-        { "ProgressionSystem.EnforceDungeonAttunement", false },
-        { "ProgressionSystem.RequireSequentialProgression", false },
-        { "ProgressionSystem.AllowDungeonBypass", true },
-        { "ProgressionSystem.RaidDifficultyScaling", false },
-        { "ProgressionSystem.LootProgressionSystem", false },
-        { "ProgressionSystem.AnnounceNewBracket", false },
-        { "ProgressionSystem.BroadcastBracketActivation", false },
-        { "ProgressionSystem.TrackBracketProgress", false },
-        { "ProgressionSystem.LogBracketActivity", false },
-        { "ProgressionSystem.AutoEventScheduling", false },
-        { "ProgressionSystem.TierCompletionBonus", false },
-        { "ProgressionSystem.FirstKillBonus", false },
-        { "ProgressionSystem.DynamicDifficultyScaling", false },
-        { "ProgressionSystem.ResetRaidInstanceTimer", false },
-        { "ProgressionSystem.DisableNextBracketItems", false },
-        { "ProgressionSystem.BlockBracketTransition", false },
-        { "ProgressionSystem.EnforceReputationRequirements", false },
-        { "ProgressionSystem.RestrictBracketTeleporters", false },
-        { "ProgressionSystem.NotifyRaidLeadersNewContent", false },
+    // Options present in mod-progression-blizzlike.conf.dist but not implemented in this module (currently none).
+    BoolOption constexpr kUnsupportedBoolOptions[] = {};
 
-        { "ProgressionSystem.Arena.Season1.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season2.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season3.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season4.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season5.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season6.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season7.BracketRestriction", false },
-        { "ProgressionSystem.Arena.Season8.BracketRestriction", false },
+    IntOption constexpr kUnsupportedIntOptions[] = {};
 
-        { "ProgressionSystem.Vendor.BlockOutdatedInventory", false },
-        { "ProgressionSystem.Vendor.AllowPreviousTierPurchase", true },
-        { "ProgressionSystem.Vendor.RestrictPVPVendors", false },
-        { "ProgressionSystem.Vendor.ShowCompatibleVendorsOnly", false },
-    };
-
-    IntOption constexpr kUnsupportedIntOptions[] =
-    {
-        { "ProgressionSystem.WorldEventCooldown", 604800 },
-        { "ProgressionSystem.ReminderTimerHours", 0 },
-    };
-
-    StringOption constexpr kUnsupportedStringOptions[] =
-    {
-    };
+    StringOption constexpr kUnsupportedStringOptions[] = {};
 }
 
 namespace

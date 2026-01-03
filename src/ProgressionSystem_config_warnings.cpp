@@ -35,73 +35,11 @@ struct StringOption
 
 // Options present in mod-progression-blizzlike.conf.dist but currently NOT implemented anywhere in this module.
 // We emit warnings only when their configured value differs from the documented default.
-BoolOption constexpr kUnsupportedBoolOptions[] =
-{
-    { "ProgressionSystem.EnforceItemRestrictions", false },
-    { "ProgressionSystem.BlockFutureVendors", false },
-    { "ProgressionSystem.EnforceArenaVendorProgression", false },
-    { "ProgressionSystem.RestrictArenaRewards", false },
-    { "ProgressionSystem.EnforceDungeonAttunement", false },
-    { "ProgressionSystem.RequireSequentialProgression", false },
-    { "ProgressionSystem.AllowDungeonBypass", true },
-    { "ProgressionSystem.RaidDifficultyScaling", false },
-    { "ProgressionSystem.LootProgressionSystem", false },
-    { "ProgressionSystem.AnnounceNewBracket", false },
-    { "ProgressionSystem.BroadcastBracketActivation", false },
-    { "ProgressionSystem.TrackBracketProgress", false },
-    { "ProgressionSystem.LogBracketActivity", false },
-    { "ProgressionSystem.AutoEventScheduling", false },
-    { "ProgressionSystem.TierCompletionBonus", false },
-    { "ProgressionSystem.FirstKillBonus", false },
-    { "ProgressionSystem.DynamicDifficultyScaling", false },
-    { "ProgressionSystem.ResetRaidInstanceTimer", false },
-    { "ProgressionSystem.DisableNextBracketItems", false },
-    { "ProgressionSystem.BlockBracketTransition", false },
-    { "ProgressionSystem.EnforceReputationRequirements", false },
-    { "ProgressionSystem.RestrictBracketTeleporters", false },
-    { "ProgressionSystem.NotifyRaidLeadersNewContent", false },
+BoolOption constexpr kUnsupportedBoolOptions[] = {};
 
-    { "ProgressionSystem.Arena.Season1.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season2.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season3.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season4.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season5.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season6.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season7.BracketRestriction", false },
-    { "ProgressionSystem.Arena.Season8.BracketRestriction", false },
+IntOption constexpr kUnsupportedIntOptions[] = {};
 
-    { "ProgressionSystem.Bracket.ArenaSeason1.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason2.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason3.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason4.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason5.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason6.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason7.Enabled", false },
-    { "ProgressionSystem.Bracket.ArenaSeason8.Enabled", false },
-
-    { "ProgressionSystem.Vendor.BlockOutdatedInventory", false },
-    { "ProgressionSystem.Vendor.AllowPreviousTierPurchase", true },
-    { "ProgressionSystem.Vendor.RestrictPVPVendors", false },
-    { "ProgressionSystem.Vendor.ShowCompatibleVendorsOnly", false },
-};
-
-IntOption constexpr kUnsupportedIntOptions[] =
-{
-    { "ProgressionSystem.WorldEventCooldown", 604800 },
-    { "ProgressionSystem.ReminderTimerHours", 0 },
-};
-
-StringOption constexpr kUnsupportedStringOptions[] =
-{
-    { "ProgressionSystem.Bracket.ArenaSeason1", "Bracket_70_2_1,Bracket_70_2_2" },
-    { "ProgressionSystem.Bracket.ArenaSeason2", "Bracket_70_2_2,Bracket_70_3_2,Bracket_70_4_1" },
-    { "ProgressionSystem.Bracket.ArenaSeason3", "Bracket_70_5" },
-    { "ProgressionSystem.Bracket.ArenaSeason4", "Bracket_70_6_2" },
-    { "ProgressionSystem.Bracket.ArenaSeason5", "Bracket_80_1_2" },
-    { "ProgressionSystem.Bracket.ArenaSeason6", "Bracket_80_2_2" },
-    { "ProgressionSystem.Bracket.ArenaSeason7", "Bracket_80_3" },
-    { "ProgressionSystem.Bracket.ArenaSeason8", "Bracket_80_4_1" },
-};
+StringOption constexpr kUnsupportedStringOptions[] = {};
 } // namespace
 
 void ProgressionSystemWarnUnsupportedConfigOptions()

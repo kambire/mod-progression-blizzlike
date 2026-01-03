@@ -25,7 +25,7 @@
 --
 -- MySQL: 8.x compatible.
 
-SET @TARGET_EMBLEM := 47241; -- Triumph
+SET @TARGET_EMBLEM := 49426; -- Frost
 
 UPDATE `quest_template`
 SET

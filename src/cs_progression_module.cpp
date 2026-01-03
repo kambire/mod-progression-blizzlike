@@ -22,6 +22,7 @@
 #include "Item.h"
 #include "Player.h"
 #include "ProgressionSystem.h"
+#include "World.h"
 
 #include <algorithm>
 
@@ -200,6 +201,39 @@ namespace
         return dbGlobal.tablePresent && dbGlobal.enabled;
     }
 
+    class ProgressionSystemAnnouncer : public PlayerScript
+    {
+    public:
+        ProgressionSystemAnnouncer() : PlayerScript("ProgressionSystemAnnouncer") { }
+
+        void OnLogin(Player* player) override
+        {
+            bool const announceGlobal = sConfigMgr->GetOption<bool>("ProgressionSystem.AnnounceNewBracket", false);
+            bool const announcePersonal = sConfigMgr->GetOption<bool>("ProgressionSystem.BroadcastBracketActivation", false);
+
+            if (!announceGlobal && !announcePersonal)
+                return;
+
+            std::string const bracket = GetHighestEnabledBracketName();
+            if (bracket.empty())
+                return;
+
+            static std::string lastAnnounced;
+
+            if (announceGlobal && bracket != lastAnnounced)
+            {
+                std::string const message = "[Progression] Nuevo bracket activo: " + bracket;
+                sWorld->SendServerMessage(SERVER_MSG_STRING, message);
+                lastAnnounced = bracket;
+            }
+
+            if (announcePersonal)
+            {
+                ChatHandler(player->GetSession()).PSendSysMessage("[Progression] Bracket activo: {}", bracket);
+            }
+        }
+    };
+
 }
 
 class progression_module_commandscript : public CommandScript
@@ -374,5 +408,6 @@ public:
 
 void AddSC_progression_module_commandscript()
 {
+    new ProgressionSystemAnnouncer();
     new progression_module_commandscript();
 }

@@ -82,6 +82,12 @@ ProgressionSystem.Debug.LogPendingSql = 1
 ProgressionSystem.Debug.MaxSqlLogLines = 500
 
 #
+# ==============================================
+#    BRACKET-SPECIFIC CONFIGURATIONS
+# ==============================================
+#
+
+#
 #    ProgressionSystem.Debug.LogAppliedSql
 #        Description: When enabled, logs which SQL files were actually applied per bracket (diff from `updates` table
 #                     before/after DBUpdater runs). Useful to confirm execution order.
@@ -98,7 +104,7 @@ ProgressionSystem.Debug.LogAppliedSql = 1
 #        Default:     0 (no delay)
 #
 
-ProgressionSystem.Debug.SqlLogDelayMs = 1000
+ProgressionSystem.Debug.SqlLogDelayMs = 150
 
 #
 #    ProgressionSystem.Debug.BracketApplyDelayMs
@@ -108,6 +114,24 @@ ProgressionSystem.Debug.SqlLogDelayMs = 1000
 #
 
 ProgressionSystem.Debug.BracketApplyDelayMs = 1
+
+#
+#    ProgressionSystem.AnnounceNewBracket
+#        Description: Anuncia globalmente (mensaje de servidor) cuando el bracket activo cambia. Se anuncia la primera vez que un jugador entra tras el arranque.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+
+ProgressionSystem.AnnounceNewBracket = 0
+
+#
+#    ProgressionSystem.BroadcastBracketActivation
+#        Description: Mensaje personal al jugador al entrar indicando el bracket actualmente activo.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+
+ProgressionSystem.BroadcastBracketActivation = 0
 
 #
 #    ProgressionSystem.HeroicGs.*
@@ -147,6 +171,49 @@ ProgressionSystem.HeroicGs.Required_Icc5_Heroic = 270
 #        Description: Defines if the bracket should be loaded being 0 not loaded, 1 loaded.
 #        Default:     0 - Not loaded.
 #
+#    Nombres amigables por expansión (guía visual)
+#    - Vanilla ("Update 60")
+#      Episodio 1: Bracket_0 a Bracket_1_19 (leveo inicial)
+#      Episodio 2: Bracket_20_29 a Bracket_40_49 (dungeons medias)
+#      Episodio 3 Etapa 1: Bracket_50_59_1 (UBRS attune)
+#      Episodio 3 Etapa 2: Bracket_50_59_2 (UBRS abierto)
+#      Episodio 4 Etapa 1: Bracket_60_1_1 (Molten Core)
+#      Episodio 4 Etapa 2: Bracket_60_1_2 (Onyxia)
+#      Episodio 5 Etapa 1: Bracket_60_2_1 (BWL)
+#      Episodio 5 Etapa 2: Bracket_60_2_2 (Zul'Gurub)
+#      Episodio 6 Etapa 1: Bracket_60_3_1 (AQ20)
+#      Episodio 6 Etapa 2: Bracket_60_3_2 (AQ40)
+#      Episodio 6 Etapa 3: Bracket_60_3_3 (Post AQ, eventos)
+#
+#    - The Burning Crusade ("Update 70")
+#      Episodio 1 Etapa 1: Bracket_61_64 (Outland early dungeons)
+#      Episodio 1 Etapa 2: Bracket_65_69 (Outland mid dungeons)
+#      Episodio 2 Etapa 1: Bracket_70_1_1 (Normales 70)
+#      Episodio 2 Etapa 2: Bracket_70_1_2 (Heroicos 70)
+#      Episodio 3 Etapa 1: Bracket_70_2_1 (Gruul/Mag, S1)
+#      Episodio 3 Etapa 2: Bracket_70_2_2 (Karazhan, S2)
+#      Episodio 3 Etapa 3: Bracket_70_2_3 (Ogri'la/Skyguard)
+#      Episodio 4 Etapa 1: Bracket_70_3_1 (SSC, T5)
+#      Episodio 4 Etapa 2: Bracket_70_3_2 (The Eye, T5)
+#      Episodio 5 Etapa 1: Bracket_70_4_1 (Hyjal, T6)
+#      Episodio 5 Etapa 2: Bracket_70_4_2 (Black Temple, T6)
+#      Episodio 6 Etapa 1: Bracket_70_5   (Zul'Aman, S3)
+#      Episodio 6 Etapa 2: Bracket_70_6_1 (Quel'Danas + Magister's)
+#      Episodio 6 Etapa 3: Bracket_70_6_2 (Sunwell + S4)
+#      Episodio 6 Etapa 4: Bracket_70_6_3 (Pre-WotLK transicion)
+#
+#    - Wrath of the Lich King ("Update 80")
+#      Episodio 1 Etapa 1: Bracket_71_74 (Northrend early leveling)
+#      Episodio 1 Etapa 2: Bracket_75_79 (Northrend mid leveling)
+#      Episodio 2 Etapa 1: Bracket_80_1_1 (Heroics iniciales)
+#      Episodio 2 Etapa 2: Bracket_80_1_2 (Naxx/OS/EoE, S5)
+#      Episodio 3 Etapa 1: Bracket_80_2_1 (Ulduar, S6)
+#      Episodio 3 Etapa 2: Bracket_80_2_2 (Emblemas up, VoA2)
+#      Episodio 4 Etapa 1: Bracket_80_3   (ToC/Onyxia80, S7)
+#      Episodio 4 Etapa 2: Bracket_80_3_5 (ICC 5m pre-patch, S7.5)
+#      Episodio 5 Etapa 1: Bracket_80_4_1 (ICC/RS gating inicio, S8)
+#      Episodio 5 Etapa 2: Bracket_80_4_2 (ICC/RS completo)
+#
 #        Docker/env-var note:
 #        - If you configure brackets via environment variables, AzerothCore may require double underscores for keys that
 #          contain `_` (example printed by the core: `ProgressionSystem.Bracket_0` -> `AC_PROGRESSION_SYSTEM_BRACKET__0`).
@@ -163,6 +230,8 @@ ProgressionSystem.Bracket_0       = 1
 # Features: First dungeons for new players, class-specific quests, basic reputation farming
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 1: Amanecer de Azeroth
+# Lore: Los primeros aventureros despiertan y descubren un mundo sin mapas claros ni guardianes evidentes. Cada cueva y bosque es una leccion rapida sobre peligro y cooperacion.
 
 ProgressionSystem.Bracket_1_19    = 1
 # Level Range: 10-19 | Vanilla: Early Game | Early Dungeons & World Content
@@ -170,6 +239,8 @@ ProgressionSystem.Bracket_1_19    = 1
 # Features: Class dungeons unlocking, faction reputation increases, crafting recipes, world boss intro
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 1: Juramento del Recluta
+# Lore: Las filas se engrosan con reclutas que juran defender su faccion mientras aprenden el peso de la disciplina. Las primeras patrullas forjan camaraderia y muestran que la guerra es algo real.
 
 ProgressionSystem.Bracket_20_29   = 1
 # Level Range: 20-29 | Vanilla: Early Game | Mid-Level Dungeons
@@ -177,6 +248,8 @@ ProgressionSystem.Bracket_20_29   = 1
 # Features: Reputation farming, profession recipes, PvP introduction, difficulty increases
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 2: Forja de Aventureros
+# Lore: Las forjas hierven y los mercaderes prueban nuevas rutas; el equipo deja de ser chatarra y empieza a ser identidad. Los aventureros definen su rol antes de adentrarse en peligros mas serios.
 
 ProgressionSystem.Bracket_30_39   = 1
 # Level Range: 30-39 | Vanilla: Early Game | Advanced Dungeons
@@ -184,6 +257,8 @@ ProgressionSystem.Bracket_30_39   = 1
 # Features: Higher-level enemies, better loot, profession recipes, world bosses become relevant
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 3: Ecos de Uldaman
+# Lore: Las ruinas titanicas revelan que el mundo tuvo arquitectos mas grandes que sus actuales habitantes. Cada sala trae pistas de un pasado que podria repetirse si no se entiende a tiempo.
 
 ProgressionSystem.Bracket_40_49   = 1
 # Level Range: 40-49 | Vanilla: Mid Game | World Dungeons & Attunement Prep
@@ -191,6 +266,8 @@ ProgressionSystem.Bracket_40_49   = 1
 # Features: Attunement quest chains begin, world boss farming, pre-raid gear, PvP intensifies
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 4: Fuego en Roca Negra
+# Lore: La montaña ruge y deja claro que el hierro y el fuego gobiernan sus profundidades. Alli se mide el temple de quienes aspiran a liderar en futuras guerras.
 
 ProgressionSystem.Bracket_50_59_1 = 1
 # Level Range: 50-59 | Vanilla: Late Game | UBRS Attunement Phase
@@ -198,6 +275,8 @@ ProgressionSystem.Bracket_50_59_1 = 1
 # Features: Attunement quest chains, raid-level difficulty encounters, epic world boss battles
 # Release: November 23, 2004
 # Recommended Duration: 1-2 weeks
+# Expansion 60 Episodio 5 Etapa 1: Forja del Pico Negro
+# Lore: Las llaves, juramentos y traiciones se templan bajo la mirada de dragones negros. La forja social de clanes y expediciones define quien merece entrar a lo mas profundo.
 
 ProgressionSystem.Bracket_50_59_2 = 1
 # Level Range: 50-59 | Vanilla: Late Game | Upper Blackrock Spire (10-man Raid-like)
@@ -205,6 +284,8 @@ ProgressionSystem.Bracket_50_59_2 = 1
 # Features: Pre-raid gear optimization, dungeon farming, final preparation for Molten Core
 # Release: November 23, 2004
 # Recommended Duration: 2-3 weeks
+# Expansion 60 Episodio 5 Etapa 2: Juramento de Rend
+# Lore: La traicion de Rend divide lealtades y obliga a los bandos a elegir entre honor o supervivencia. Cada pasillo de Pico Roca Negra es un recordatorio de politicas fragiles.
 
 ProgressionSystem.Bracket_60_1_1  = 1
 # Level 60 | Vanilla: Raid Tier 1 | Molten Core (40-man)
@@ -213,6 +294,8 @@ ProgressionSystem.Bracket_60_1_1  = 1
 # Features: First true raid experience, 40-man coordination, world-class encounters, epic boss mounts
 # Release: November 23, 2004
 # Recommended Duration: 6-8 weeks
+# Expansion 60 Episodio 6 Etapa 1: Llamas del Nucleo de Magma
+# Lore: Ragnaros despierta y convierte la piedra en ríos de lava; solo los mejor coordinados pueden apagar esa ira. Este asalto inaugura el concepto de que sin disciplina el mundo ardera.
 
 ProgressionSystem.Bracket_60_1_2  = 1
 # Level 60 | Vanilla: Raid Tier 1 (Optional) | Onyxia's Lair (40-man)
@@ -221,6 +304,8 @@ ProgressionSystem.Bracket_60_1_2  = 1
 # Features: Iconic dragon encounter, class debuff challenge, first real DPS check, dragon mount
 # Release: November 23, 2004
 # Recommended Duration: 3-4 weeks (can overlap with Molten Core)
+# Expansion 60 Episodio 6 Etapa 2: La Furia de Onyxia
+# Lore: Onyxia emerge como pieza maestra en la lucha de poder entre reinos humanos. Su guarida recuerda que la intriga politica puede ser tan mortal como su aliento.
 
 ProgressionSystem.Bracket_60_2_1  = 1
 # Level 60 | Vanilla: Raid Tier 2 | Blackwing Lair (40-man)
@@ -229,6 +314,8 @@ ProgressionSystem.Bracket_60_2_1  = 1
 # Features: Fire resistance gear requirements, dragon encounters, buff control, complex mechanics
 # Release: January 19, 2005
 # Recommended Duration: 6-8 weeks
+# Expansion 60 Episodio 7 Etapa 1: Trono de Nefarian
+# Lore: En el trono de Nefarian los dragones negros perfeccionan armas vivientes. Las lineas entre ciencia oscura y pura arrogancia se difuminan mientras el aire se llena de toxinas.
 
 ProgressionSystem.Bracket_60_2_2  = 1
 # Level 60 | Vanilla: Raid Tier 2.5 (Optional) | Zul'Gurub (20-man)
@@ -237,6 +324,8 @@ ProgressionSystem.Bracket_60_2_2  = 1
 # Features: Troll aesthetic, 20-man format, voodoo/spirit magic, unique mechanics
 # Release: January 19, 2005
 # Recommended Duration: 4-6 weeks (can overlap with BWL)
+# Expansion 60 Episodio 7 Etapa 2: Tambores de Zul'Gurub
+# Lore: Zul'Gurub late al ritmo de tambores que piden sangre para Hakkar. Cada altar muestra hasta donde llega la desesperacion de un imperio en decadencia.
 
 ProgressionSystem.Bracket_60_3_1  = 1
 # Level 60 | Vanilla: Raid Tier 2.5 | Ruins of Ahn'Qiraj (20-man)
@@ -245,6 +334,8 @@ ProgressionSystem.Bracket_60_3_1  = 1
 # Features: Insectoid encounters, sandstorm mechanics, Cenarion Circle reputation
 # Release: January 19, 2005
 # Recommended Duration: 4-6 weeks (can overlap with BWL)
+# Expansion 60 Episodio 8 Etapa 1: Arenas del Enjambre
+# Lore: El desierto vibra cuando los quiraiji emergen y la Arena se vuelve un frente vivo. Los heroes ven que la guerra puede ser tan horizontal como subterranea.
 
 ProgressionSystem.Bracket_60_3_2  = 1
 # Level 60 | Vanilla: Raid Tier 3 | Temple of Ahn'Qiraj (40-man)
@@ -253,6 +344,8 @@ ProgressionSystem.Bracket_60_3_2  = 1
 # Features: Bug encounters, nature vs insect storyline, C'Thun complexity, silithid farming
 # Release: January 19, 2005
 # Recommended Duration: 6-8 weeks
+# Expansion 60 Episodio 8 Etapa 2: El Ojo de C'Thun
+# Lore: C'Thun observa desde el vacio y corrompe a todo aquel que duda. La sensacion de ser observado convierte cada pasillo en una prueba mental.
 
 ProgressionSystem.Bracket_60_3_3  = 1
 # Level 60 | Vanilla: Final Phase | AQ Post-Content (World Events)
@@ -260,6 +353,8 @@ ProgressionSystem.Bracket_60_3_3  = 1
 # Features: World event coordination, dragon hunting, final Vanilla phase preparation
 # Release: January 19, 2005 onwards
 # Recommended Duration: 3-4 weeks (transition phase)
+# Expansion 60 Episodio 8 Etapa 3: La Marcha del Escarabajo
+# Lore: El golpe del gong resuena por el mundo y marca un antes y un despues en la historia. La marcha del escarabajo es tanto celebracion como advertencia de amenazas mayores.
 
 ProgressionSystem.Bracket_61_64   = 1
 # Level Range: 61-64 | TBC: Early Game | Outland Introductory Dungeons
@@ -267,6 +362,8 @@ ProgressionSystem.Bracket_61_64   = 1
 # Features: Fel energy introduction, dark iron enemies, lich king lore begin
 # Release: January 16, 2007
 # Recommended Duration: 1-2 weeks
+# Expansion 70 Episodio 1 Etapa 1: Portales de Fuego Infernal
+# Lore: Los portales se desgarran y revelan un Terrallende partido por la Legion. Cruzarlos es aceptar que el hogar ya no es seguro y que el frente es ahora interdimensional.
 
 ProgressionSystem.Bracket_65_69   = 1
 # Level Range: 65-69 | TBC: Mid Game | Mid-Level Outland Dungeons
@@ -274,6 +371,8 @@ ProgressionSystem.Bracket_65_69   = 1
 # Features: Tier 0.5 pre-raid gear, reputation farming intensifies
 # Release: January 16, 2007
 # Recommended Duration: 1-2 weeks
+# Expansion 70 Episodio 1 Etapa 2: Marismas del Vortice
+# Lore: Las ciénagas respiran veneno y ocultan santuarios naga que custodian secretos olvidados. Cada zancada en el lodo es una eleccion entre riesgo y avance.
 
 ProgressionSystem.Bracket_70_1_1  = 1
 # Level 70 | TBC: Early Raid Prep | Normal Dungeons
@@ -281,6 +380,8 @@ ProgressionSystem.Bracket_70_1_1  = 1
 # Features: Badge currency introduction, decent pre-raid gear, flying mount availability
 # Release: January 16, 2007
 # Recommended Duration: 2-3 weeks
+# Expansion 70 Episodio 2 Etapa 1: Sombras del Pantano
+# Lore: Bajo los zigurats, los espiritus miden la reverencia de los vivos antes de otorgar paso. Los heroes aprenden que el mas alla influye tanto como los ejércitos demoníacos.
 
 ProgressionSystem.Bracket_70_1_2  = 1
 # Level 70 | TBC: Raid Prep | Heroic Dungeons
@@ -288,6 +389,8 @@ ProgressionSystem.Bracket_70_1_2  = 1
 # Features: Badges of Valor for epic gear, attunement requirements, first DPS checks
 # Release: January 16, 2007
 # Recommended Duration: 2-3 weeks
+# Expansion 70 Episodio 2 Etapa 2: Heroes de Terrallende
+# Lore: Los campeones pulen sus habilidades y descubren que la logistica de grupo define la victoria. Las primeras insignias y llaves abren mas que puertas: abren confianza.
 
 ProgressionSystem.Bracket_70_2_1  = 1
 # Level 70 | TBC: Raid Tier 1 | Gruul's Lair & Magtheridon's Lair + Arena Season 1
@@ -296,6 +399,8 @@ ProgressionSystem.Bracket_70_2_1  = 1
 # Features: First TBC raid experience, world event coordination, T4 epic gear, Arena PvP begins
 # Release: January 16, 2007
 # Recommended Duration: 4-6 weeks
+# Expansion 70 Episodio 3 Etapa 1: Eco de los Colosos
+# Lore: Los gronn sirven de martillo y yunque para medir las raids novatas. Su colera avisa que el escalar de dificultad sera abrupto y sin piedad.
 
 ProgressionSystem.Bracket_70_2_2  = 1
 # Level 70 | TBC: Raid Tier 1 (10-man) | Karazhan + Arena Season 2
@@ -304,6 +409,8 @@ ProgressionSystem.Bracket_70_2_2  = 1
 # Features: 10-man format accessibility, Medivh lore, attunement requirement, tower progression
 # Release: January 16, 2007
 # Recommended Duration: 4-6 weeks (can overlap with Gruul/Mag)
+# Expansion 70 Episodio 3 Etapa 2: Misterios de Karazhan
+# Lore: Karazhan tienta con visiones y obras perdidas; cada sala decide si recompensa la curiosidad o la castiga. El tiempo y la magia se doblan contra los imprudentes.
 
 ProgressionSystem.Bracket_70_2_3  = 1
 # Level 70 | TBC: World Content | Ogri'la Dailies (Blade's Edge Mountains)
@@ -311,6 +418,8 @@ ProgressionSystem.Bracket_70_2_3  = 1
 # NOTE: World content only - NOT a raid tier. Should consolidate with Bracket_70_6_1
 # Release: March 19, 2008
 # Recommended Duration: 2-3 weeks (world content, continuous)
+# Expansion 70 Episodio 3 Etapa 3: Cielos de Skettis
+# Lore: En las alturas los arakkoa traman venganzas contra un mundo que los olvida. Sus rituales aereos obligan a los heroes a pelear donde el vacio tambien es enemigo.
 
 ProgressionSystem.Bracket_70_3_1  = 1
 # Level 70 | TBC: Raid Tier 2 | Serpentshrine Cavern (25-man)
@@ -319,6 +428,8 @@ ProgressionSystem.Bracket_70_3_1  = 1
 # Features: Water resistance mechanics, Vashj encounters, T5 epic gear, attunement required
 # Release: May 15, 2007
 # Recommended Duration: 5-7 weeks
+# Expansion 70 Episodio 4 Etapa 1: Marea de Vashj
+# Lore: Lady Vashj controla aguas envenenadas y corrientes imposibles; entrar es aceptar combates anfibios. Cada plataforma exige coordinacion o la marea cobrara tributo.
 
 ProgressionSystem.Bracket_70_3_2  = 1
 # Level 70 | TBC: Raid Tier 2 | The Eye (25-man) + Sha'tari Skyguard (World Content)
@@ -327,6 +438,8 @@ ProgressionSystem.Bracket_70_3_2  = 1
 # Features: Arcane encounters, magical themes, T5 epic gear, flight requirements
 # Release: May 15, 2007
 # Recommended Duration: 5-7 weeks (can overlap with SSC)
+# Expansion 70 Episodio 4 Etapa 2: Cristales de Tempest Keep
+# Lore: Tempest Keep flota sostenido por magia desatada; cada cristal es un riesgo de colapso. Kael'thas redefine la arrogancia arcana y la paga con caos.
 
 ProgressionSystem.Bracket_70_4_1  = 1
 # Level 70 | TBC: Raid Tier 3 | Battle For Mount Hyjal (25-man) + Arena Season 2 + Netherwing
@@ -335,6 +448,8 @@ ProgressionSystem.Bracket_70_4_1  = 1
 # Features: Night Elf defense lore, demon encounters, outdoor raid setting, T6 epic gear, Arena Season 2
 # Release: August 24, 2007
 # Recommended Duration: 5-7 weeks
+# Expansion 70 Episodio 5 Etapa 1: Cenizas de Hyjal
+# Lore: En Hyjal se reeditan las defensas de antaño con olas de invasores infinitos. Los heroes sostienen la linea sabiendo que una sola brecha perderia el monte.
 
 ProgressionSystem.Bracket_70_4_2  = 1
 # Level 70 | TBC: Raid Tier 4 | Black Temple (25-man)
@@ -343,6 +458,8 @@ ProgressionSystem.Bracket_70_4_2  = 1
 # Features: Illidan encounter, highest difficulty, T6 epic gear, world-class coordination, Illidan mount
 # Release: September 24, 2007
 # Recommended Duration: 6-8 weeks
+# Expansion 70 Episodio 5 Etapa 2: Sombra de Traidor
+# Lore: Illidan gobierna el Templo Negro como laboratorio de armas y demonios. Los invasores deben probar que “no estan preparados” es solo un eslogan.
 
 ProgressionSystem.Bracket_70_5    = 1
 # Level 70 | TBC: Raid Tier 2.5 (10-man) | Zul'Aman + Arena Season 3
@@ -351,6 +468,8 @@ ProgressionSystem.Bracket_70_5    = 1
 # Features: Troll aesthetic, spirit animal encounters, T5 gear equivalency, 10-man format, Arena Season 3
 # Release: December 11, 2007
 # Recommended Duration: 4-6 weeks (10-man alternative)
+# Expansion 70 Episodio 6 Etapa 1: Tambores en las Tierras Fantasma
+# Lore: Zul'Aman resuena con tambores que invocan espiritus animales en defensa de la selva. El cronometro del rescate acelera cada decision del grupo.
 
 ProgressionSystem.Bracket_70_6_1  = 1
 # Level 70 | TBC: World Content | Isle of Quel'Danas (Shattered Sun Island)
@@ -358,6 +477,8 @@ ProgressionSystem.Bracket_70_6_1  = 1
 # Features: New flying zones, world boss hunting, Shattered Sun Offensive reputation, zone events
 # Release: May 22, 2008
 # Recommended Duration: 2-3 weeks (world content, overlaps with raids)
+# Expansion 70 Episodio 6 Etapa 2: Amanecer en Quel'Danas
+# Lore: En Quel'Danas, artesanos y soldados levantan muros mientras la Legion bombardea sin descanso. Cada avance diario acerca a la luz, pero a coste de sangre.
 
 ProgressionSystem.Bracket_70_6_2  = 1
 # Level 70 | TBC: Raid Tier 5 (Final) | Sunwell Plateau (25-man) + Arena Season 4
@@ -366,6 +487,8 @@ ProgressionSystem.Bracket_70_6_2  = 1
 # Features: Highest damage output encounters, T6 final epic gear, PvP Season 4, world-class coordination, Illidan mount
 # Release: May 22, 2008 (Raid), March 25, 2008 (Arena Season 4)
 # Recommended Duration: 8-12 weeks (final raid tier, longest phase)
+# Expansion 70 Episodio 6 Etapa 3: Sol Rojo de Sunwell
+# Lore: En Sunwell, la luz se distorsiona y cada jefe es un sello contra Kil'jaeden. El rojo del sol advierte que incluso la magia pura puede corromperse.
 
 ProgressionSystem.Bracket_70_6_3  = 1
 # Level 70 | TBC: Final Phase | World Events & Expansion Transition
@@ -373,6 +496,8 @@ ProgressionSystem.Bracket_70_6_3  = 1
 # Features: World event participation, expansion transition quests, final TBC achievements
 # Release: August 19, 2008
 # Recommended Duration: 3-4 weeks (transition to WotLK)
+# Expansion 70 Episodio 6 Etapa 4: Vigilia hacia la Escarcha
+# Lore: Cerrado el ciclo en Terrallende, los ejercitos miran al norte sabiendo que el Lich King no esperara. Este interludio es la vigilia antes de la tormenta de escarcha.
 
 ProgressionSystem.Bracket_71_74   = 1
 # Level Range: 71-74 | WotLK: Early Northrend | Leveling Dungeons (Normal)
@@ -386,6 +511,8 @@ ProgressionSystem.Bracket_71_74   = 1
 # - Equipo azul/verdes de leveleo, reputaciones base (ej. Wyrmrest / Kirin Tor / etc.).
 # Release (Patch): 3.0.x (WotLK launch era)
 # Recommended Duration: 1-2 weeks
+# Expansion 80 Episodio 1 Etapa 1: Vientos del Fiordo
+# Lore: El fiordo ulula con vientos cargados de runas y drakkar vrykul. Cada desembarco anuncia que el Azote ya esta despierto en las costas.
 
 ProgressionSystem.Bracket_75_79   = 0
 # Level Range: 75-79 | WotLK: Mid Northrend | Leveling Dungeons (Normal)
@@ -405,6 +532,8 @@ ProgressionSystem.Bracket_75_79   = 0
 # - NO incluir Forge of Souls / Pit of Saron / Halls of Reflection acá (son ICC-era, lvl 80, patch 3.3).
 # Release (Patch): 3.0.x (WotLK launch era)
 # Recommended Duration: 1-2 weeks
+# Expansion 80 Episodio 1 Etapa 2: Truenos de Zul'Drak
+# Lore: En Zul'Drak los drakkari sacrifican a sus loa por desesperacion. Los heroes ven como una civilizacion se devora a si misma para no caer sin pelear.
 
 ProgressionSystem.Bracket_80_1_1    = 0
 # Level 80 | WotLK: Pre-Raid | Normal Dungeons (Launch set)
@@ -415,6 +544,8 @@ ProgressionSystem.Bracket_80_1_1    = 0
 # - Preparación para entrar a heroicas (gemas/enchants básicos).
 # Release (Patch): 3.0.x
 # Recommended Duration: 1-2 weeks
+# Expansion 80 Episodio 2 Etapa 0: Vigilia del Heroe
+# Lore: Este es el respiro antes del asalto total; se revisan forjas, encantamientos y rutas de suministros. El preparativo define quien entrara vivo a las heroicas.
 
 ProgressionSystem.Bracket_80_1_2    = 0
 # Level 80 | WotLK: Pre-Raid | Heroic Dungeons (Launch set) + Arena Season 5
@@ -426,6 +557,8 @@ ProgressionSystem.Bracket_80_1_2    = 0
 # - Primera etapa real de gear-check (tanks/heals ya importan).
 # Release (Patch): 3.0.x (heroics de salida) + S5 dentro de la era temprana de WotLK
 # Recommended Duration: 2-3 weeks
+# Expansion 80 Episodio 2 Etapa 1: Despertar del Azote
+# Lore: El Azote replica con plaga y no hay mazmorra sin riesgo real de wipe. Las insignias y reputaciones ahora son el puente critico hacia las raids.
 
 ProgressionSystem.Bracket_80_2_1  = 0
 # Level 80 | WotLK: Raid Tier 7 (Launch raids)
@@ -440,6 +573,8 @@ ProgressionSystem.Bracket_80_2_1  = 0
 # - Ideal para progresión: gatear consumibles/enchants y primeras metas de raid.
 # Release (Patch): 3.0.x (launch raids)
 # Recommended Duration: 6-10 weeks (depende si tu server es casual o competitivo)
+# Expansion 80 Episodio 2 Etapa 1: La venganza de Kel'Thuzad
+# Lore: Naxxramas vuelve a sobrevolar los cielos helados llevando la firma de Kel'Thuzad. Es la prueba de fuego para medir si los reinos estan listos para algo mayor.
 
 ProgressionSystem.Bracket_80_2_2  = 0
 # Level 80 | WotLK: Raid Tier 8 | Ulduar (10/25) + Arena Season 6
@@ -451,6 +586,8 @@ ProgressionSystem.Bracket_80_2_2  = 0
 # - "Tier largo": se suele quedar mas tiempo (mucha gente farmea Ulduar bastante).
 # Release (Patch): 3.1.x (Ulduar era) + S6
 # Recommended Duration: 8-12 weeks
+# Expansion 80 Episodio 2 Etapa 2: Forja de los Titanes
+# Lore: Ulduar abre sus puertas y los guardianes evalúan si la creacion necesita un reset. Cada hardmode es un debate entre obedecer el diseño titanico o desafiarlo.
 
 ProgressionSystem.Bracket_80_3    = 0
 # Level 80 | WotLK: Raid Tier 9 | Trial of the Crusader + Onyxia 80 + Arena Season 7
@@ -463,6 +600,23 @@ ProgressionSystem.Bracket_80_3    = 0
 # - Excelente bracket para setear reglas de vendors/recompensas y evitar “salto” de tiers.
 # Release (Patch): 3.2.x (ToC era) + 3.2.2 (Onyxia 80) + S7
 # Recommended Duration: 6-10 weeks
+# Expansion 80 Episodio 3 Etapa 1: Torneo de Campeones
+# Lore: El Torneo argenta reune campeones de todas las facciones en terreno neutral. Sirve de vitrina y filtro: solo los dignos podran marchar a Corona de Hielo.
+
+ProgressionSystem.Bracket_80_3_5  = 0
+# Level 80 | WotLK: Frozen Halls (FoS/PoS/HoR) | puente entre ToC y ICC
+# Content:
+# - The Forge of Souls (632)
+# - Pit of Saron (658)
+# - Halls of Reflection (668)
+# Features:
+# - Desbloquea solo las 5-man de Frozen Halls; ICC raid (631) y Ruby Sanctum siguen cerrados.
+# - Emblemas: heroicas de Frozen Halls dan Triunfo (47241) tal como parche 3.3.
+# - RDF sigue activo si lo tienes habilitado: los mapas entran al pool heroico y recompensan Triunfo.
+# Release (Patch): 3.3.0 (sin ICC raid aún)
+# Recommended Duration: 2-4 weeks
+# Expansion 80 Episodio 3 Etapa 2: Ecos del Rey Exanime
+# Lore: Las Fosas y Salas de Reflexion son ensayos de horror psicologico; el Rey Exanime persigue mientras las puertas se cierran. El miedo es tanto mecanica como narrativa.
 
 ProgressionSystem.Bracket_80_4_1  = 0
 # Level 80 | WotLK: Raid Tier 10 | Icecrown Citadel + Frozen Halls 5-man + Arena Season 8
@@ -478,6 +632,8 @@ ProgressionSystem.Bracket_80_4_1  = 0
 # - Ideal para aplicar el gate de iLvl de ICC5 (normal/heroic) si lo usas.
 # Release (Patch): 3.3.x (ICC + Frozen Halls) + 3.3.2 (S8 era)
 # Recommended Duration: 10-16 weeks (o más si querés endgame largo)
+# Expansion 80 Episodio 4 Etapa 1: Corona de Hielo
+# Lore: El asedio a Corona de Hielo enfrenta juramentos rotos, val'kyr y plaga. Cada ala muestra una cara distinta del dominio del Lich King.
 
 ProgressionSystem.Bracket_80_4_2  = 0
 # Level 80 | WotLK: Post-ICC Bonus Raid | Ruby Sanctum
@@ -487,273 +643,10 @@ ProgressionSystem.Bracket_80_4_2  = 0
 # - “Bonus raid” final antes de Cataclysm; sirve como cierre y mini-progresión extra.
 # Release (Patch): 3.3.5
 # Recommended Duration: 4-8 weeks
+# Expansion 80 Episodio 4 Etapa 2: Llama Carmesi del Santuario
+# Lore: El Santuario Rubi arde bajo la sombra del Crepusculo, recordando que tras el Lich King hay mas amenazas. Es la nota final antes de la transicion a un mundo sin corona de hielo.
 
 ProgressionSystem.Bracket_Custom  = 0
-
-#
-# ==============================================
-#    PROGRESSION SYSTEM ADVANCED FEATURES
-# ==============================================
-# IMPORTANT:
-# The options in this section are currently placeholders.
-# They are documented for future work but are NOT enforced by the current C++ module code.
-# Setting them will have no effect beyond potential future compatibility.
-#
-# The only options that currently have effect are:
-# - ProgressionSystem.LoadScripts / ProgressionSystem.LoadDatabase / ProgressionSystem.ReapplyUpdates
-# - ProgressionSystem.Bracket_* (bracket enable/disable)
-# - ProgressionSystem.DisabledAttunements
-# - The bracket-specific options used by existing scripts (e.g. MoltenCore/SSC/TheEye)
-#
-
-#
-#    ProgressionSystem.EnforceItemRestrictions
-#        Description: Prevents players from equipping items that belong to future brackets
-#        Impact: Players in Vanilla bracket cannot wear TBC/WotLK items until progression advances
-#        Default:   0 - Disabled
-#                   1 - Enabled (Recommended for strict progression)
-#
-
-ProgressionSystem.EnforceItemRestrictions = 0
-
-#
-#    ProgressionSystem.BlockFutureVendors
-#        Description: Hides vendors and their shops from players whose bracket level is too low
-#        Impact: Tier 2+ vendors are invisible to players in Tier 1 bracket
-#        Default:   0 - Disabled
-#                   1 - Enabled (Recommended for immersion)
-#
-
-ProgressionSystem.BlockFutureVendors = 0
-
-#
-#    ProgressionSystem.EnforceArenaVendorProgression
-#        Description: CRITICAL - Restricts Arena PvP vendors to only their corresponding season
-#                     Season 1 (TBC) vendors only appear during TBC brackets
-#                     Season 5+ (WotLK) vendors only appear during WotLK brackets
-#        Impact: Players CANNOT buy Season 2 items while in Season 1 (enforces seasonal progression)
-#        Default:   0 - Disabled
-#                   1 - Enabled (HIGHLY RECOMMENDED - fixes arena vendor issues)
-#
-
-ProgressionSystem.EnforceArenaVendorProgression = 0
-
-#
-#    ProgressionSystem.RestrictArenaRewards
-#        Description: Prevents arena rewards from seasons beyond the current bracket season
-#        Impact: No Season 4 arena gear available until Sunwell Plateau bracket
-#        Default:   0 - Disabled
-#                   1 - Enabled (Strict control)
-#
-
-ProgressionSystem.RestrictArenaRewards = 0
-
-#
-#    ProgressionSystem.EnforceDungeonAttunement
-#        Description: Requires players to complete attunement quests before accessing dungeons/raids
-#        Impact: Cannot enter Molten Core without attunement quest
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.EnforceDungeonAttunement = 0
-
-#
-#    ProgressionSystem.RequireSequentialProgression
-#        Description: Forces players to complete brackets in order (cannot skip content)
-#        Impact: Must complete Vanilla before accessing TBC content
-#        Default:   0 - Disabled
-#                   1 - Enabled (Full progression control)
-#
-
-ProgressionSystem.RequireSequentialProgression = 0
-
-#
-#    ProgressionSystem.AllowDungeonBypass
-#        Description: If disabled, dungeon-only brackets cannot be skipped
-#        Impact: Must run Karazhan before moving to Hyjal (if enabled)
-#        Default:   1 - Enabled (Allow bypassing)
-#                   0 - Disabled (Enforce all dungeons)
-#
-
-ProgressionSystem.AllowDungeonBypass = 0
-
-#
-#    ProgressionSystem.RaidDifficultyScaling
-#        Description: Automatically scales raid encounter difficulty based on player count
-#        Impact: 10-player raids are easier than 40-player raids with proportional scaling
-#        Default:   0 - Disabled
-#                   1 - Enabled (Dynamic difficulty)
-#
-
-ProgressionSystem.RaidDifficultyScaling = 0
-
-#
-#    ProgressionSystem.LootProgressionSystem
-#        Description: Prevents item inflation by blocking outdated loot from being too powerful
-#        Impact: Items from older content have reduced stats in newer brackets
-#        Default:   0 - Disabled
-#                   1 - Enabled (Strict loot progression)
-#
-
-ProgressionSystem.LootProgressionSystem = 0
-
-#
-#    ProgressionSystem.AnnounceNewBracket
-#        Description: Broadcasts to all players when a new bracket becomes available
-#        Impact: Global message like "[Progression] Bracket 70_2_1 is now active!"
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.AnnounceNewBracket = 0
-
-#
-#    ProgressionSystem.BroadcastBracketActivation
-#        Description: Sends personal notification to affected players when their bracket opens
-#        Impact: Players receive a popup/message when reaching bracket level
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.BroadcastBracketActivation = 0
-
-#
-#    ProgressionSystem.TrackBracketProgress
-#        Description: Logs boss kills and bracket completion achievements
-#        Impact: Enables statistics, ranking systems, and progression tracking
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.TrackBracketProgress = 0
-
-#
-#    ProgressionSystem.LogBracketActivity
-#        Description: Creates detailed database logs of all bracket-related activities
-#        Impact: Useful for admin debugging and audit trails
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.LogBracketActivity = 0
-
-#
-#    ProgressionSystem.AutoEventScheduling
-#        Description: Automatically triggers world events (invasions, boss spawns) when brackets change
-#        Impact: Dragons spawn when Vanilla ends, Burning Legion invades when TBC tier completes
-#        Default:   0 - Disabled
-#                   1 - Enabled (Immersive events)
-#
-
-ProgressionSystem.AutoEventScheduling = 0
-
-#
-#    ProgressionSystem.WorldEventCooldown
-#        Description: Time (in seconds) between automatic world event triggers
-#        Impact: Prevents event spam. 604800 = 7 days, 86400 = 1 day
-#        Default:   604800 (7 days)
-#
-
-ProgressionSystem.WorldEventCooldown = 604800
-
-#
-#    ProgressionSystem.TierCompletionBonus
-#        Description: Grants rewards when all bosses in a tier are defeated
-#        Impact: +10% XP/Rep bonus for 1 week after tier completion
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.TierCompletionBonus = 0
-
-#
-#    ProgressionSystem.FirstKillBonus
-#        Description: Special rewards for the first kill of each new boss encounter
-#        Impact: Extra gold, achievement points, faction reputation boost
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.FirstKillBonus = 0
-
-#
-#    ProgressionSystem.DynamicDifficultyScaling
-#        Description: Increases raid difficulty if players farm content too easily
-#        Impact: After 10+ kills, boss HP/damage increases by 10% per week
-#        Default:   0 - Disabled
-#                   1 - Enabled (Keeps content challenging)
-#
-
-ProgressionSystem.DynamicDifficultyScaling = 0
-
-#
-#    ProgressionSystem.ResetRaidInstanceTimer
-#        Description: How often raid instances reset (in hours)
-#        Impact: 0 = once per week (Blizzard-like), 24 = daily resets (faster progression)
-#        Default:   0 (Weekly reset)
-#
-
-ProgressionSystem.ResetRaidInstanceTimer = 0
-
-#
-#    ProgressionSystem.DisableNextBracketItems
-#        Description: Prevents items from next bracket from being accessible early
-#        Impact: No T5 items until you reach T5 bracket
-#        Default:   0 - Disabled
-#                   1 - Enabled (Strict item control)
-#
-
-ProgressionSystem.DisableNextBracketItems = 0
-
-#
-#    ProgressionSystem.BlockBracketTransition
-#        Description: Prevents players from changing to next bracket until objectives met
-#        Impact: Cannot progress to TBC until Vanilla raid final boss defeated
-#        Default:   0 - Disabled
-#                   1 - Enabled (Mandatory progression)
-#
-
-ProgressionSystem.BlockBracketTransition = 0
-
-#
-#    ProgressionSystem.EnforceReputationRequirements
-#        Description: Requires specific faction reputation to access bracket vendors
-#        Impact: Need Honored with Cenarion Circle before accessing AQ40 vendor
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.EnforceReputationRequirements = 0
-
-#
-#    ProgressionSystem.RestrictBracketTeleporters
-#        Description: Blocks teleportation to zones from future brackets
-#        Impact: Cannot use portal to Shattrath if still in Vanilla bracket
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.RestrictBracketTeleporters = 0
-
-#
-#    ProgressionSystem.NotifyRaidLeadersNewContent
-#        Description: Sends email/message to raid leaders when new tier content opens
-#        Impact: Leaders get notified automatically to organize raids
-#        Default:   0 - Disabled
-#                   1 - Enabled
-#
-
-ProgressionSystem.NotifyRaidLeadersNewContent = 0
-
-#
-#    ProgressionSystem.ReminderTimerHours
-#        Description: How often players receive reminders about uncompleted bracket objectives
-#        Impact: 24 = daily reminders, 168 = weekly, 0 = disabled
-#        Default:   0 (Disabled)
-#
-
-ProgressionSystem.ReminderTimerHours = 0
 
 #
 # ==============================================
@@ -812,126 +705,6 @@ ProgressionSystem.70.SerpentshrineCavern.RequireAllBosses = 0
 ProgressionSystem.70.TheEye.RequireAllBosses = 0
 
 #    ProgressionSystem.DisabledAttunements
-#
-#    ProgressionSystem.Arena.Season1.BracketRestriction
-#        Description: CRITICAL - Restricts Season 1 Arena vendors to Bracket_70_2_1 and Bracket_70_2_2 only
-#                     Season 1 items cannot be purchased in earlier or later brackets
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season1.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season2.BracketRestriction
-#        Description: CRITICAL - Restricts Season 2 Arena vendors to Season 2 brackets only
-#                     Season 2 items (Merciless gear) available only during Season 2 phase
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season2.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season3.BracketRestriction
-#        Description: CRITICAL - Restricts Season 3 Arena vendors to Season 3 brackets only
-#                     Season 3 items (Vengeful gear) available only during Season 3 phase
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season3.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season4.BracketRestriction
-#        Description: CRITICAL - Restricts Season 4 Arena vendors to Bracket_70_6_2 only
-#                     Season 4 items (Brutal gear) available only during Sunwell Plateau tier
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season4.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season5.BracketRestriction
-#        Description: CRITICAL - Restricts Season 5 Arena vendors to WotLK brackets (80_1_1 and later)
-#                     Season 5 items (Deadly gear) available only during WotLK expansion
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season5.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season6.BracketRestriction
-#        Description: CRITICAL - Restricts Season 6 Arena vendors to Bracket_80_2_2 only
-#                     Season 6 items (Furious gear) available only during Ulduar tier
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season6.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season7.BracketRestriction
-#        Description: CRITICAL - Restricts Season 7 Arena vendors to Bracket_80_3 only
-#                     Season 7 items (Relentless gear) available only during Trial of Crusader tier
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season7.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Arena.Season8.BracketRestriction
-#        Description: CRITICAL - Restricts Season 8 Arena vendors to Bracket_80_4_1 only
-#                     Season 8 items (Wrathful gear) available only during Icecrown Citadel tier
-#        Default:   0 - Disabled
-#                   1 - Enabled (RECOMMENDED)
-#
-
-ProgressionSystem.Arena.Season8.BracketRestriction = 0
-
-#
-#    ProgressionSystem.Vendor.BlockOutdatedInventory
-#        Description: Hides previous tier vendor inventories from current bracket
-#        Impact: Old vendor items greyed out or completely hidden
-#        Default:   0 - Disabled
-#                   1 - Enabled (Clean vendor experience)
-#
-
-ProgressionSystem.Vendor.BlockOutdatedInventory = 0
-
-#
-#    ProgressionSystem.Vendor.AllowPreviousTierPurchase
-#        Description: If disabled, players CANNOT buy items from previous brackets
-#        Impact: Cannot buy T3 items while in T4 bracket (unless set to 1)
-#        Default:   1 - Enabled (Allow buying previous tier)
-#                   0 - Disabled (Strict progression only)
-#
-
-ProgressionSystem.Vendor.AllowPreviousTierPurchase = 1
-
-#
-#    ProgressionSystem.Vendor.RestrictPVPVendors
-#        Description: Prevents access to PvP/Arena vendors outside their bracket
-#        Impact: Arena vendor completely hidden if bracket doesn't match
-#        Default:   0 - Disabled
-#                   1 - Enabled (Strict vendor control - RECOMMENDED with ArenaRestriction)
-#
-
-ProgressionSystem.Vendor.RestrictPVPVendors = 0
-
-#
-#    ProgressionSystem.Vendor.ShowCompatibleVendorsOnly
-#        Description: Only shows vendors that sell items for current player bracket level
-#        Impact: Much cleaner vendor interface with only relevant options
-#        Default:   0 - Disabled
-#                   1 - Enabled (Recommended)
-#
-
-ProgressionSystem.Vendor.ShowCompatibleVendorsOnly = 0
-
 #        Description: Clears the selected attunements (dungeon_access_requirement) from database, even if SQL reapply mode is on.
 #                     Use this to end an attunement requirement prematurely, or debug.
 #                     Use `dungeon_access_id` separated by a comma, e.g "32, 64" to disable the attunements for Hyjal & Black Temple, respectively.
