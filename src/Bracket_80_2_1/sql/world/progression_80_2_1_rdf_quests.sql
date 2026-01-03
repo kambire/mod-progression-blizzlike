@@ -3,7 +3,7 @@
 -- - Heroic 5-man bosses: Heroism (40752) [handled in progression_80_2_1_emblems.sql]
 -- - Daily normal ("Timear Foresees..."): Heroism (40752) x2
 -- - Daily heroic ("Proof of Demise..."): Valor (40753) x2
--- - RDF (if enabled): keep Heroism (40752)
+-- - RDF: primera heroica del día = Valor x2, resto = Heroism
 --
 -- Emblem IDs:
 -- Heroism   40752
@@ -12,11 +12,13 @@
 -- Triumph   47241
 -- Frost     49426
 
--- RDF / Random dungeon (common AzerothCore WotLK):
--- 24788: Daily heroic random (1st)
--- 24789: Daily heroic random (Nth)
--- 24790: Daily normal random (Nth)
-UPDATE `quest_template` SET `rewarditem1` = 40752, `RewardAmount1` = 1 WHERE `ID` IN (24788,24789,24790);
+UPDATE `quest_template`
+SET `rewarditem1` = 40753, `RewardAmount1` = 2
+WHERE `ID` = 24788;
+
+UPDATE `quest_template`
+SET `rewarditem1` = 40752, `RewardAmount1` = 1
+WHERE `ID` IN (24789,24790);
 
 -- Dalaran normal dungeon daily quests (Archmage Timear): "Timear Foresees..."
 UPDATE `quest_template` SET `rewarditem1` = 40752, `RewardAmount1` = 2 WHERE `ID` IN (13240,13241,13243,13244);
