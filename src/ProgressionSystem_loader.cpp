@@ -6,6 +6,7 @@
 #include "Define.h"
 #include "Log.h"
 #include "ProgressionSystem.h"
+#include "GameEventMgr.h"
 #include "Tokenize.h"
 
 namespace
@@ -199,6 +200,36 @@ namespace
     }
 }
 
+static void ProgressionSystemAutoStartArenaEvents()
+{
+    if (!sConfigMgr->GetOption<bool>("ProgressionSystem.Arena.AutoStartEvents", false, false))
+        return;
+
+    struct SeasonEvent
+    {
+        uint8 season;
+        uint32 eventId;
+    };
+
+    constexpr SeasonEvent kSeasonEvents[] = {
+        {1, 75}, {2, 76}, {3, 55}, {4, 56}, {5, 57}, {6, 58}, {7, 59}, {8, 60}
+    };
+
+    for (SeasonEvent const& se : kSeasonEvents)
+    {
+        std::string const enabledKey = "ProgressionSystem.Bracket.ArenaSeason" + std::to_string(se.season) + ".Enabled";
+        bool const enabled = sConfigMgr->GetOption<bool>(enabledKey, false, false);
+        if (!enabled)
+            continue;
+
+        if (sGameEventMgr->IsActiveEvent(se.eventId))
+            continue;
+
+        sGameEventMgr->StartEvent(se.eventId, true);
+        LOG_INFO("server.server",
+            "[mod-progression-blizzlike] Auto-started Arena Season {} (game_event {}).", se.season, se.eventId);
+    }
+}
 static void ProgressionSystemLogEffectiveConfig()
 {
     bool const loadScripts = sConfigMgr->GetOption<bool>("ProgressionSystem.LoadScripts", true);
@@ -324,6 +355,7 @@ void Addmod_progression_systemScripts()
 
     ProgressionSystemLogEffectiveConfig();
     ProgressionSystemWarnInvalidConfigOptions();
+    ProgressionSystemAutoStartArenaEvents();
 
     AddProgressionSystemScripts();
     AddSC_progression_module_commandscript();

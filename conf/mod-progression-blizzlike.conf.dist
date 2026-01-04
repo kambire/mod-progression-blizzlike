@@ -166,63 +166,7 @@ ProgressionSystem.HeroicGs.Required_80_4_2 = 240
 ProgressionSystem.HeroicGs.Required_Icc5_Normal = 250
 ProgressionSystem.HeroicGs.Required_Icc5_Heroic = 270
 
-#
-#    ProgressionSystem.Bracket_X
-#        Description: Defines if the bracket should be loaded being 0 not loaded, 1 loaded.
-#        Default:     0 - Not loaded.
-#
-#    Nombres amigables por expansión (guía visual)
-#    - Vanilla ("Update 60")
-#      Episodio 1: Bracket_0 a Bracket_1_19 (leveo inicial)
-#      Episodio 2: Bracket_20_29 a Bracket_40_49 (dungeons medias)
-#      Episodio 3 Etapa 1: Bracket_50_59_1 (UBRS attune)
-#      Episodio 3 Etapa 2: Bracket_50_59_2 (UBRS abierto)
-#      Episodio 4 Etapa 1: Bracket_60_1_1 (Molten Core)
-#      Episodio 4 Etapa 2: Bracket_60_1_2 (Onyxia)
-#      Episodio 5 Etapa 1: Bracket_60_2_1 (BWL)
-#      Episodio 5 Etapa 2: Bracket_60_2_2 (Zul'Gurub)
-#      Episodio 6 Etapa 1: Bracket_60_3_1 (AQ20)
-#      Episodio 6 Etapa 2: Bracket_60_3_2 (AQ40)
-#      Episodio 6 Etapa 3: Bracket_60_3_3 (Post AQ, eventos)
-#
-#    - The Burning Crusade ("Update 70")
-#      Episodio 1 Etapa 1: Bracket_61_64 (Outland early dungeons)
-#      Episodio 1 Etapa 2: Bracket_65_69 (Outland mid dungeons)
-#      Episodio 2 Etapa 1: Bracket_70_1_1 (Normales 70)
-#      Episodio 2 Etapa 2: Bracket_70_1_2 (Heroicos 70)
-#      Episodio 3 Etapa 1: Bracket_70_2_1 (Gruul/Mag, S1)
-#      Episodio 3 Etapa 2: Bracket_70_2_2 (Karazhan, S2)
-#      Episodio 3 Etapa 3: Bracket_70_2_3 (Ogri'la/Skyguard)
-#      Episodio 4 Etapa 1: Bracket_70_3_1 (SSC, T5)
-#      Episodio 4 Etapa 2: Bracket_70_3_2 (The Eye, T5)
-#      Episodio 5 Etapa 1: Bracket_70_4_1 (Hyjal, T6)
-#      Episodio 5 Etapa 2: Bracket_70_4_2 (Black Temple, T6)
-#      Episodio 6 Etapa 1: Bracket_70_5   (Zul'Aman, S3)
-#      Episodio 6 Etapa 2: Bracket_70_6_1 (Quel'Danas + Magister's)
-#      Episodio 6 Etapa 3: Bracket_70_6_2 (Sunwell + S4)
-#      Episodio 6 Etapa 4: Bracket_70_6_3 (Pre-WotLK transicion)
-#
-#    - Wrath of the Lich King ("Update 80")
-#      Episodio 1 Etapa 1: Bracket_71_74 (Northrend early leveling)
-#      Episodio 1 Etapa 2: Bracket_75_79 (Northrend mid leveling)
-#      Episodio 2 Etapa 1: Bracket_80_1_1 (Heroics iniciales)
-#      Episodio 2 Etapa 2: Bracket_80_1_2 (Naxx/OS/EoE, S5)
-#      Episodio 3 Etapa 1: Bracket_80_2_1 (Ulduar, S6)
-#      Episodio 3 Etapa 2: Bracket_80_2_2 (Emblemas up, VoA2)
-#      Episodio 4 Etapa 1: Bracket_80_3   (ToC/Onyxia80, S7)
-#      Episodio 4 Etapa 2: Bracket_80_3_5 (ICC 5m pre-patch, S7.5)
-#      Episodio 5 Etapa 1: Bracket_80_4_1 (ICC/RS gating inicio, S8)
-#      Episodio 5 Etapa 2: Bracket_80_4_2 (ICC/RS completo)
-#
-#        Docker/env-var note:
-#        - If you configure brackets via environment variables, AzerothCore may require double underscores for keys that
-#          contain `_` (example printed by the core: `ProgressionSystem.Bracket_0` -> `AC_PROGRESSION_SYSTEM_BRACKET__0`).
-#        - For this module it is strongly recommended to copy this file to `etc/modules/mod-progression-blizzlike.conf`
-#          and edit the `ProgressionSystem.Bracket_*` values there instead of setting dozens of env vars.
-#
-#        Technical details (autoload SQL + scripts):
-#        - `audit/BRACKET_RUNTIME_REPORT.md`
-#        - Regenerate: `powershell -ExecutionPolicy Bypass -File scripts/generate_bracket_report.ps1`
+###################################################################################################
 
 ProgressionSystem.Bracket_0       = 1
 # Level Range: 1-10 | Vanilla: Pre-Launch | Starting Zones
@@ -252,6 +196,7 @@ ProgressionSystem.Bracket_20_29   = 1
 # Lore: Las forjas hierven y los mercaderes prueban nuevas rutas; el equipo deja de ser chatarra y empieza a ser identidad. Los aventureros definen su rol antes de adentrarse en peligros mas serios.
 
 ProgressionSystem.Bracket_30_39   = 1
+
 # Level Range: 30-39 | Vanilla: Early Game | Advanced Dungeons
 # Content: Uldaman (Dwarven heritage), Razorfen Downs (undead zone), Scarlet Monastery
 # Features: Higher-level enemies, better loot, profession recipes, world bosses become relevant
@@ -274,7 +219,7 @@ ProgressionSystem.Bracket_50_59_1 = 1
 # Content: Upper Blackrock Spire attunement preparation, world bosses (Azuregos, Dragons, Kazzak)
 # Features: Attunement quest chains, raid-level difficulty encounters, epic world boss battles
 # Release: November 23, 2004
-# Recommended Duration: 1-2 weeks
+# Recommended Duration: 2-3 weeks
 # Expansion 60 Episodio 5 Etapa 1: Forja del Pico Negro
 # Lore: Las llaves, juramentos y traiciones se templan bajo la mirada de dragones negros. La forja social de clanes y expediciones define quien merece entrar a lo mas profundo.
 
@@ -304,12 +249,6 @@ ProgressionSystem.Bracket_60_1_2  = 1
 # Features: Iconic dragon encounter, class debuff challenge, first real DPS check, dragon mount
 # Release: November 23, 2004
 # Recommended Duration: 3-4 weeks (can overlap with Molten Core)
-
-# Arena Seasons (WotLK) — explicit toggles to avoid missing-config warnings
-ProgressionSystem.Bracket.ArenaSeason5.Enabled = 0
-ProgressionSystem.Bracket.ArenaSeason6.Enabled = 0
-ProgressionSystem.Bracket.ArenaSeason7.Enabled = 0
-ProgressionSystem.Bracket.ArenaSeason8.Enabled = 0
 # Expansion 60 Episodio 6 Etapa 2: La Furia de Onyxia
 # Lore: Onyxia emerge como pieza maestra en la lucha de poder entre reinos humanos. Su guarida recuerda que la intriga politica puede ser tan mortal como su aliento.
 
@@ -654,6 +593,24 @@ ProgressionSystem.Bracket_80_4_2  = 0
 
 ProgressionSystem.Bracket_Custom  = 0
 
+###################################################################################################
+
+# Arena Seasons (WotLK)
+# Set to 1 to enable that season (IDs shown are the game_event IDs; do NOT place IDs here).
+ProgressionSystem.Bracket.ArenaSeason1.Enabled = 0   # game_event 75
+ProgressionSystem.Bracket.ArenaSeason2.Enabled = 0   # game_event 76
+ProgressionSystem.Bracket.ArenaSeason3.Enabled = 0   # game_event 55
+ProgressionSystem.Bracket.ArenaSeason4.Enabled = 0   # game_event 56
+ProgressionSystem.Bracket.ArenaSeason5.Enabled = 1   # game_event 57
+ProgressionSystem.Bracket.ArenaSeason6.Enabled = 0   # game_event 58
+ProgressionSystem.Bracket.ArenaSeason7.Enabled = 0   # game_event 59
+ProgressionSystem.Bracket.ArenaSeason8.Enabled = 0   # game_event 60
+
+# Auto-start Arena Seasons
+# Event mapping: S1=75, S2=76, S3=55, S4=56, S5=57, S6=58, S7=59, S8=60. You only toggle 0/1 above; IDs are informational.
+# When enabled, if a season mapping is enabled it will start the corresponding game_event on startup.
+ProgressionSystem.Arena.AutoStartEvents = 1
+###################################################################################################
 #
 # ==============================================
 #    BRACKET-SPECIFIC CONFIGURATIONS
