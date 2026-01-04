@@ -304,6 +304,12 @@ ProgressionSystem.Bracket_60_1_2  = 1
 # Features: Iconic dragon encounter, class debuff challenge, first real DPS check, dragon mount
 # Release: November 23, 2004
 # Recommended Duration: 3-4 weeks (can overlap with Molten Core)
+
+# Arena Seasons (WotLK) — explicit toggles to avoid missing-config warnings
+ProgressionSystem.Bracket.ArenaSeason5.Enabled = 0
+ProgressionSystem.Bracket.ArenaSeason6.Enabled = 0
+ProgressionSystem.Bracket.ArenaSeason7.Enabled = 0
+ProgressionSystem.Bracket.ArenaSeason8.Enabled = 0
 # Expansion 60 Episodio 6 Etapa 2: La Furia de Onyxia
 # Lore: Onyxia emerge como pieza maestra en la lucha de poder entre reinos humanos. Su guarida recuerda que la intriga politica puede ser tan mortal como su aliento.
 
