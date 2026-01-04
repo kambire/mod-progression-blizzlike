@@ -21,6 +21,7 @@
 #include "DBCEnums.h"
 #include "Item.h"
 #include "Language.h"
+#include "Log.h"
 #include "Player.h"
 #include "ProgressionSystem.h"
 #include "World.h"
@@ -235,8 +236,13 @@ namespace
             if (announceGlobal && bracket != lastAnnounced)
             {
                 std::string const message = "[Progression] Nuevo bracket activo: " + bracket;
-                // Use SendWorldText with LANG_SYSTEMMESSAGE for broad core compatibility.
+                // Broadcast compatibility: if no global text API exists, at least log to console.
+                // If the core lacks a global text API, fall back to logging only.
+#ifdef CLASSIC_BROADCAST_API
                 sWorld->SendWorldText(LANG_SYSTEMMESSAGE, message.c_str());
+#else
+                LOG_INFO("module", "{}", message);
+#endif
                 lastAnnounced = bracket;
             }
 
